@@ -4,7 +4,7 @@
 import type { Project, Snippet } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from "@/components/ui/card";
-import { Code, Copy, Github, Pencil, Trash2, Folder, Terminal, Sparkles, ChevronDown } from "lucide-react";
+import { Code, Copy, Github, Pencil, Trash2, Folder, Terminal, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
@@ -23,12 +23,6 @@ import { useMemo } from "react";
 import { ScrollArea } from "../ui/scroll-area";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { GitHubInsights } from "./github-insights";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 
 type ProjectCardProps = {
@@ -183,23 +177,14 @@ export function ProjectCard({ project, onEdit, onDelete, allSnippets }: ProjectC
       </CardContent>
 
       <CardFooter className="flex-wrap gap-2 justify-start border-t px-6 py-4 mt-auto">
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                Open <ChevronDown className="h-4 w-4 ml-1 -mr-1" />
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-                <DropdownMenuItem onClick={() => handleOpenInVSCode(project.path)}>
-                    <Code className="h-4 w-4 mr-2" />
-                    Open in VS Code
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleCopy(project.path, 'Project path copied.')}>
-                    <Copy className="h-4 w-4 mr-2" />
-                    Copy Path
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
+        <Button variant="outline" size="sm" onClick={() => handleOpenInVSCode(project.path)}>
+            <Code className="h-4 w-4 mr-2" />
+            Open in VS Code
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => handleCopy(project.path, 'Project path copied.')}>
+            <Copy className="h-4 w-4 mr-2" />
+            Copy Path
+        </Button>
 
         {project.githubUrl && (
             <Button variant="outline" size="sm" asChild>
