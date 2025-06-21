@@ -4,7 +4,7 @@ import type { Snippet } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Copy, Pencil, Trash2, Star, Check } from "lucide-react";
+import { Copy, Pencil, Trash2, Pin, PinOff, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
@@ -24,10 +24,10 @@ type SnippetCardProps = {
   snippet: Snippet;
   onEdit: (snippet: Snippet) => void;
   onDelete: (id: string) => void;
-  onToggleFavorite: (id: string) => void;
+  onPin: (id: string) => void;
 };
 
-export function SnippetCard({ snippet, onEdit, onDelete, onToggleFavorite }: SnippetCardProps) {
+export function SnippetCard({ snippet, onEdit, onDelete, onPin }: SnippetCardProps) {
   const { toast } = useToast();
   const [isCopied, setIsCopied] = useState(false);
 
@@ -42,14 +42,17 @@ export function SnippetCard({ snippet, onEdit, onDelete, onToggleFavorite }: Sni
   };
 
   return (
-    <Card className="flex flex-col h-full shadow-sm hover:shadow-md transition-shadow duration-300">
+    <Card className={cn("flex flex-col h-full shadow-sm hover:shadow-md transition-shadow duration-300", snippet.isPinned && "ring-2 ring-primary/50")}>
       <CardHeader className="pb-4">
         <div className="flex items-start justify-between gap-2">
           <CardTitle className="text-xl font-bold flex-1">{snippet.title}</CardTitle>
           <div className="flex items-center -mt-1 -mr-2">
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onToggleFavorite(snippet.id)}>
-              <Star className={cn("h-4 w-4 transition-all", snippet.isFavorite ? "fill-amber-400 text-amber-500" : "text-muted-foreground hover:text-amber-500")} />
-              <span className="sr-only">Favorite Snippet</span>
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onPin(snippet.id)}>
+              {snippet.isPinned 
+                ? <PinOff className="h-4 w-4 text-primary" /> 
+                : <Pin className={cn("h-4 w-4 text-muted-foreground hover:text-primary")} />
+              }
+              <span className="sr-only">{snippet.isPinned ? "Unpin" : "Pin"} Snippet</span>
             </Button>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onEdit(snippet)}>
               <Pencil className="h-4 w-4" />

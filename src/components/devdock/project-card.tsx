@@ -4,7 +4,7 @@
 import type { Project, Snippet } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from "@/components/ui/card";
-import { Code, Copy, Github, Pencil, Trash2, Folder, Terminal, Sparkles } from "lucide-react";
+import { Code, Copy, Github, Pencil, Trash2, Folder, Terminal, Sparkles, Pin, PinOff, MoreVertical } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
@@ -23,6 +23,7 @@ import { useMemo } from "react";
 import { ScrollArea } from "../ui/scroll-area";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { GitHubInsights } from "./github-insights";
+import { cn } from "@/lib/utils";
 
 
 type ProjectCardProps = {
@@ -30,9 +31,11 @@ type ProjectCardProps = {
   allSnippets: Snippet[];
   onEdit: (project: Project) => void;
   onDelete: (id: string) => void;
+  onPin: (id: string) => void;
+  onViewDetails: (project: Project) => void;
 };
 
-export function ProjectCard({ project, onEdit, onDelete, allSnippets }: ProjectCardProps) {
+export function ProjectCard({ project, onEdit, onDelete, onPin, onViewDetails, allSnippets }: ProjectCardProps) {
   const { toast } = useToast();
 
   const handleCopy = (textToCopy: string, successMessage: string) => {
@@ -58,11 +61,15 @@ export function ProjectCard({ project, onEdit, onDelete, allSnippets }: ProjectC
   }, [project.tags, allSnippets]);
 
   return (
-    <Card className="flex flex-col h-full shadow-sm hover:shadow-md transition-shadow duration-300">
+    <Card className={cn("flex flex-col h-full shadow-sm hover:shadow-md transition-shadow duration-300", project.isPinned && "ring-2 ring-primary/50")}>
       <CardHeader className="pb-4">
         <div className="flex items-start justify-between gap-2">
             <CardTitle className="text-xl font-bold flex-1">{project.name}</CardTitle>
             <div className="flex items-center -mt-1 -mr-2">
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onPin(project.id)}>
+                    {project.isPinned ? <PinOff className="h-4 w-4 text-primary" /> : <Pin className="h-4 w-4 text-muted-foreground hover:text-primary" />}
+                    <span className="sr-only">{project.isPinned ? "Unpin" : "Pin"} Project</span>
+                </Button>
                 {suggestedSnippets.length > 0 && (
                 <Popover>
                     <PopoverTrigger asChild>
@@ -94,6 +101,10 @@ export function ProjectCard({ project, onEdit, onDelete, allSnippets }: ProjectC
                     </PopoverContent>
                 </Popover>
                 )}
+                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onViewDetails(project)}>
+                    <MoreVertical className="h-4 w-4" />
+                    <span className="sr-only">View Details</span>
+                </Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onEdit(project)}>
                 <Pencil className="h-4 w-4" />
                 <span className="sr-only">Edit Project</span>

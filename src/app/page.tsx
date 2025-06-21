@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useDevDock } from "@/contexts/DevDockDataContext";
+import { useUIState } from "@/contexts/UIStateContext";
 import { Header } from "@/components/devdock/header";
 import { ProjectList } from "@/components/devdock/project-list";
 import { SnippetList } from "@/components/devdock/snippet-list";
@@ -10,13 +11,56 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { saveAs } from "file-saver";
 import { CommandPalette } from "@/components/devdock/command-palette";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { ActivityLogItem } from "@/lib/types";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { formatDistanceToNow } from "date-fns";
+import { Clock } from "lucide-react";
 
+
+function ActivityLogDialog() {
+  const { activityLog } = useDevDock();
+  const { openDialog, closeDialog } = useUIState();
+
+  return (
+    <Dialog open={openDialog === 'activityLog'} onOpenChange={(isOpen) => !isOpen && closeDialog()}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Recent Activity</DialogTitle>
+          <DialogDescription>
+            A log of the most recent actions performed in DevDock.
+          </DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-96 pr-4">
+          <div className="space-y-4">
+            {activityLog.length > 0 ? (
+              activityLog.map((log: ActivityLogItem) => (
+                <div key={log.id} className="flex items-start gap-3 text-sm">
+                  <Clock className="h-4 w-4 mt-0.5 text-muted-foreground" />
+                  <div>
+                    <p className="text-foreground">{log.message}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatDistanceToNow(new Date(log.timestamp), { addSuffix: true })}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground text-center py-8">No recent activity.</p>
+            )}
+          </div>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export default function Home() {
   const { exportData, importData, refreshData } = useDevDock();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState("projects");
+  const { openActivityLog } = useUIState();
 
   const handleExport = () => {
     try {
@@ -77,7 +121,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <Header onExport={handleExport} onImport={handleImportClick} />
+      <Header onExport={handleExport} onImport={handleImportClick} onShowActivity={openActivityLog} />
       <CommandPalette setActiveTab={setActiveTab} />
        <input
         type="file"
@@ -106,6 +150,7 @@ export default function Home() {
           </TabsContent>
         </Tabs>
       </main>
+      <ActivityLogDialog />
     </div>
   );
 }

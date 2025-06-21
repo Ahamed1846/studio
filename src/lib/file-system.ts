@@ -13,15 +13,19 @@ const ScriptSchema = z.object({
   id: z.string(),
   name: z.string(),
   command: z.string(),
+  isPinned: z.boolean().default(false).optional(),
 });
 
 const ProjectSchema = z.object({
   id: z.string(),
   name: z.string(),
   path: z.string(),
-  githubUrl: z.string().optional(),
+  githubUrl: z.string().url().optional().or(z.literal('')),
   tags: z.array(z.string()).default([]),
   scripts: z.array(ScriptSchema).default([]),
+  notes: z.string().default('').optional(),
+  isPinned: z.boolean().default(false).optional(),
+  lastModified: z.string(),
 });
 
 const SnippetSchema = z.object({
@@ -29,12 +33,27 @@ const SnippetSchema = z.object({
   title: z.string(),
   content: z.string(),
   tags: z.array(z.string()).default([]),
-  isFavorite: z.boolean().default(false),
+  isFavorite: z.boolean().optional(), // For migrating old data
+  isPinned: z.boolean().optional(),
+}).transform((data) => {
+    // If isFavorite exists and isPinned doesn't, migrate it.
+    if (data.isFavorite !== undefined && data.isPinned === undefined) {
+        data.isPinned = data.isFavorite;
+    }
+    delete data.isFavorite;
+    return { ...data, isPinned: data.isPinned ?? false };
+});
+
+const ActivityLogItemSchema = z.object({
+    id: z.string(),
+    timestamp: z.string(),
+    message: z.string(),
 });
 
 export const DevDockDataSchema = z.object({
   projects: z.array(ProjectSchema).default([]),
   snippets: z.array(SnippetSchema).default([]),
+  activityLog: z.array(ActivityLogItemSchema).default([]).optional(),
 });
 
 
@@ -80,6 +99,7 @@ async function loadDataFromDb<T>(key: string): Promise<T | undefined> {
 const defaultData: DevDockData = {
   projects: [],
   snippets: [],
+  activityLog: [],
 };
 
 export async function loadData(): Promise<DevDockData> {

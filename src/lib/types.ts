@@ -12,6 +12,9 @@ export interface Project {
   githubUrl?: string;
   tags: string[];
   scripts: Script[];
+  notes?: string;
+  isPinned?: boolean;
+  lastModified: string;
 }
 
 export interface Snippet {
@@ -19,7 +22,7 @@ export interface Snippet {
   title: string;
   content: string;
   tags: string[];
-  isFavorite: boolean;
+  isPinned?: boolean;
 }
 
 export interface GitHelpItem {
@@ -27,7 +30,14 @@ export interface GitHelpItem {
   answer: string;
 }
 
+export interface ActivityLogItem {
+  id: string;
+  timestamp: string;
+  message: string;
+}
+
 export interface DevDockData {
   projects: Project[];
   snippets: Snippet[];
+  activityLog?: ActivityLogItem[];
 }

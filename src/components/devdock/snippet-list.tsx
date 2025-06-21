@@ -7,7 +7,7 @@ import type { Snippet } from "@/lib/types";
 import { SnippetCard } from "./snippet-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PlusCircle, Search, FileWarning, Star, Code } from "lucide-react";
+import { PlusCircle, Search, FileWarning, Pin, Code } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -22,11 +22,11 @@ import { Separator } from "@/components/ui/separator";
 
 
 export function SnippetList() {
-  const { snippets, status, error, addSnippet, updateSnippet, deleteSnippet, toggleSnippetFavorite } = useDevDock();
+  const { snippets, status, error, addSnippet, updateSnippet, deleteSnippet, toggleSnippetPin } = useDevDock();
   const { openDialog, editingSnippet, openSnippetForm, closeDialog } = useUIState();
   const [searchTerm, setSearchTerm] = useState("");
 
-  const handleFormSubmit = async (data: Omit<Snippet, "id" | "isFavorite">) => {
+  const handleFormSubmit = async (data: Omit<Snippet, "id" | "isPinned">) => {
     if (editingSnippet) {
       await updateSnippet({ ...editingSnippet, ...data });
     } else {
@@ -35,8 +35,8 @@ export function SnippetList() {
     closeDialog();
   };
 
-  const { favoriteSnippets, otherSnippets } = useMemo(() => {
-    if (status !== 'ready') return { favoriteSnippets: [], otherSnippets: [] };
+  const { pinnedSnippets, otherSnippets } = useMemo(() => {
+    if (status !== 'ready') return { pinnedSnippets: [], otherSnippets: [] };
     
     const filtered = snippets.filter(
       (snippet) =>
@@ -46,10 +46,10 @@ export function SnippetList() {
         )
     );
 
-    const favorites = filtered.filter(s => s.isFavorite).sort((a, b) => a.title.localeCompare(b.title));
-    const others = filtered.filter(s => !s.isFavorite).sort((a, b) => a.title.localeCompare(b.title));
+    const pinned = filtered.filter(s => s.isPinned).sort((a, b) => a.title.localeCompare(b.title));
+    const others = filtered.filter(s => !s.isPinned).sort((a, b) => a.title.localeCompare(b.title));
     
-    return { favoriteSnippets: favorites, otherSnippets: others };
+    return { pinnedSnippets: pinned, otherSnippets: others };
   }, [snippets, searchTerm, status]);
 
   if (status === 'loading') {
@@ -84,7 +84,7 @@ export function SnippetList() {
             snippet={snippet}
             onEdit={() => openSnippetForm(snippet)}
             onDelete={deleteSnippet}
-            onToggleFavorite={toggleSnippetFavorite}
+            onPin={toggleSnippetPin}
         />
         ))}
     </div>
@@ -115,7 +115,7 @@ export function SnippetList() {
         </div>
       </div>
 
-      {favoriteSnippets.length === 0 && otherSnippets.length === 0 ? (
+      {pinnedSnippets.length === 0 && otherSnippets.length === 0 ? (
          <div className="text-center py-16 px-4 border-2 border-dashed rounded-xl bg-card">
            <div className="flex justify-center items-center w-16 h-16 mx-auto bg-muted rounded-full mb-6 text-muted-foreground">
               {searchTerm ? <Search className="h-8 w-8" /> : <Code className="h-8 w-8" />}
@@ -135,22 +135,22 @@ export function SnippetList() {
         </div>
       ) : (
         <div className="space-y-10">
-            {favoriteSnippets.length > 0 && (
+            {pinnedSnippets.length > 0 && (
                 <section className="space-y-4">
                     <div className="flex items-center gap-3">
-                        <Star className="h-6 w-6 text-amber-500" />
-                        <h3 className="text-2xl font-bold tracking-tight">Favorites</h3>
+                        <Pin className="h-6 w-6 text-primary" />
+                        <h3 className="text-2xl font-bold tracking-tight">Pinned</h3>
                     </div>
-                    {renderSnippetList(favoriteSnippets)}
+                    {renderSnippetList(pinnedSnippets)}
                 </section>
             )}
             
-            {favoriteSnippets.length > 0 && otherSnippets.length > 0 && <Separator />}
+            {pinnedSnippets.length > 0 && otherSnippets.length > 0 && <Separator />}
 
             {otherSnippets.length > 0 && (
                 <section className="space-y-4">
-                   {favoriteSnippets.length > 0 && (
-                     <h3 className="text-2xl font-bold tracking-tight">Other Snippets</h3>
+                   {pinnedSnippets.length > 0 && (
+                     <h3 className="text-2xl font-bold tracking-tight">All Snippets</h3>
                    )}
                    {renderSnippetList(otherSnippets)}
                 </section>

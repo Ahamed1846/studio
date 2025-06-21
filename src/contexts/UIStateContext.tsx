@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import type { Project, Snippet } from '@/lib/types';
 
-type Dialogs = 'addProject' | 'editProject' | 'addSnippet' | 'editSnippet' | null;
+type Dialogs = 'addProject' | 'editProject' | 'addSnippet' | 'editSnippet' | 'projectDetails' | 'activityLog' | null;
 
 interface UIStateContextType {
   openDialog: Dialogs;
@@ -13,6 +13,8 @@ interface UIStateContextType {
   
   openProjectForm: (project?: Project | null) => void;
   openSnippetForm: (snippet?: Snippet | null) => void;
+  openProjectDetails: (project: Project) => void;
+  openActivityLog: () => void;
   closeDialog: () => void;
   setShowCommandPalette: (show: boolean) => void;
 }
@@ -34,6 +36,15 @@ export function UIStateProvider({ children }: { children: ReactNode }) {
     setEditingSnippet(snippet);
     setOpenDialog(snippet ? 'editSnippet' : 'addSnippet');
   };
+  
+  const openProjectDetails = (project: Project) => {
+    setEditingProject(project);
+    setOpenDialog('projectDetails');
+  };
+
+  const openActivityLog = () => {
+    setOpenDialog('activityLog');
+  };
 
   const closeDialog = () => {
     setOpenDialog(null);
@@ -48,6 +59,8 @@ export function UIStateProvider({ children }: { children: ReactNode }) {
     showCommandPalette,
     openProjectForm,
     openSnippetForm,
+    openProjectDetails,
+    openActivityLog,
     closeDialog,
     setShowCommandPalette,
   };

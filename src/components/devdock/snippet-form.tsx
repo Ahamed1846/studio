@@ -28,7 +28,7 @@ type SnippetFormValues = z.infer<typeof snippetSchema>;
 
 type SnippetFormProps = {
   snippet?: Snippet | null;
-  onSubmit: (data: Omit<Snippet, "id" | "isFavorite">) => void;
+  onSubmit: (data: Omit<Snippet, "id" | "isPinned">) => void;
   onClose: () => void;
 };
 

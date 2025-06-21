@@ -17,6 +17,7 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { PlusCircle, Trash2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
@@ -32,13 +33,14 @@ const projectSchema = z.object({
   githubUrl: z.string().url("Please enter a valid URL.").optional().or(z.literal('')),
   tags: z.string().optional(),
   scripts: z.array(scriptSchema).optional(),
+  notes: z.string().optional(),
 });
 
 type ProjectFormValues = z.infer<typeof projectSchema>;
 
 type ProjectFormProps = {
   project?: Project | null;
-  onSubmit: (data: Omit<Project, 'id'>) => void;
+  onSubmit: (data: Omit<Project, 'id' | 'lastModified'>) => void;
   onClose: () => void;
 };
 
@@ -51,6 +53,7 @@ export function ProjectForm({ project, onSubmit, onClose }: ProjectFormProps) {
       githubUrl: project?.githubUrl || "",
       tags: project?.tags?.join(", ") || "",
       scripts: project?.scripts || [],
+      notes: project?.notes || "",
     },
   });
 
@@ -64,14 +67,15 @@ export function ProjectForm({ project, onSubmit, onClose }: ProjectFormProps) {
     const finalData = {
       ...data,
       tags: tagsArray,
-      scripts: data.scripts || []
+      scripts: data.scripts || [],
+      notes: data.notes || "",
     };
     onSubmit(finalData);
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 max-h-[70vh] overflow-y-auto pr-4">
         <FormField
           control={form.control}
           name="name"
@@ -122,6 +126,27 @@ export function ProjectForm({ project, onSubmit, onClose }: ProjectFormProps) {
               </FormControl>
               <FormDescription>
                 Enter tags separated by commas.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="notes"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Notes (Optional)</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Add any project-specific notes here. Markdown is supported."
+                  className="min-h-[120px]"
+                  {...field}
+                />
+              </FormControl>
+               <FormDescription>
+                Useful for setup instructions, TODOs, or config details.
               </FormDescription>
               <FormMessage />
             </FormItem>

@@ -1,7 +1,7 @@
 
 import { DevDockIcon } from "./icons";
 import { Button } from "@/components/ui/button";
-import { Upload, Download, Search } from "lucide-react";
+import { Upload, Download, Search, History } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -13,9 +13,10 @@ import { useUIState } from "@/contexts/UIStateContext";
 type HeaderProps = {
   onImport: () => void;
   onExport: () => void;
+  onShowActivity: () => void;
 }
 
-export function Header({ onImport, onExport }: HeaderProps) {
+export function Header({ onImport, onExport, onShowActivity }: HeaderProps) {
   const { setShowCommandPalette } = useUIState();
 
   return (
@@ -25,7 +26,7 @@ export function Header({ onImport, onExport }: HeaderProps) {
           <DevDockIcon className="h-7 w-7 mr-3 text-primary" />
           <span className="text-xl font-bold tracking-tight">DevDock</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
             <Button
               variant="outline"
               className="relative h-10 w-full justify-start rounded-md bg-background text-sm font-normal text-muted-foreground shadow-none sm:pr-12 md:w-40 lg:w-64"
@@ -38,6 +39,19 @@ export function Header({ onImport, onExport }: HeaderProps) {
                 <span className="text-base">⌘</span>K
               </kbd>
             </Button>
+            <TooltipProvider delayDuration={0}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" onClick={onShowActivity}>
+                    <History className="h-4 w-4" />
+                    <span className="sr-only">Show Activity</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Recent Activity
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger asChild>
