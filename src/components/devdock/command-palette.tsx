@@ -52,20 +52,6 @@ export function CommandPalette({ setActiveTab }: CommandPaletteProps) {
     });
   };
 
-  const handleOpenVSCode = (path: string) => {
-    const newTab = window.open("", "_blank");
-    if (newTab) {
-      newTab.location.href = `vscode://file/${path}`;
-      setTimeout(() => newTab.close(), 500);
-    } else {
-       toast({
-        variant: "destructive",
-        title: "Popup Blocked",
-        description: "Please allow pop-ups for this site.",
-      });
-    }
-  };
-
   return (
     <CommandDialog open={showCommandPalette} onOpenChange={setShowCommandPalette}>
       <CommandInput placeholder="Type a command or search..." />
@@ -105,10 +91,6 @@ export function CommandPalette({ setActiveTab }: CommandPaletteProps) {
         {projects.length > 0 && (
           <CommandGroup heading="Projects">
             {projects.flatMap((project) => [
-              <CommandItem key={`${project.id}-vscode`} onSelect={() => runCommand(() => handleOpenVSCode(project.path))}>
-                  <CodeXml className="mr-2 h-4 w-4" />
-                  <span>{project.name}: Open in VS Code</span>
-              </CommandItem>,
               <CommandItem key={`${project.id}-copypath`} onSelect={() => runCommand(() => handleCopy(project.path, 'Project path copied.'))}>
                   <Copy className="mr-2 h-4 w-4" />
                   <span>{project.name}: Copy Path</span>

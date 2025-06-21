@@ -44,22 +44,6 @@ export function ProjectCard({ project, onEdit, onDelete, allSnippets }: ProjectC
     });
   };
 
-  const handleOpenVSCode = () => {
-    const newTab = window.open("", "_blank");
-    if (newTab) {
-      newTab.location.href = `vscode://file/${project.path}`;
-      setTimeout(() => {
-        newTab.close();
-      }, 500);
-    } else {
-      toast({
-        variant: "destructive",
-        title: "Popup Blocked",
-        description: "Please allow pop-ups for this site to open projects in VS Code.",
-      });
-    }
-  };
-
   const suggestedSnippets = useMemo(() => {
     if (!project.tags || project.tags.length === 0 || !allSnippets) {
         return [];
@@ -162,18 +146,9 @@ export function ProjectCard({ project, onEdit, onDelete, allSnippets }: ProjectC
                         <Terminal className="h-4 w-4 text-muted-foreground" />
                         <p className="text-sm font-mono truncate" title={script.command}>{script.name}</p>
                         </div>
-                        <TooltipProvider delayDuration={100}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleCopy(script.command, `Command "${script.name}" copied.`)}>
-                                <Copy className="h-4 w-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              Copy command to clipboard.
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleCopy(script.command, `Command "${script.name}" copied.`)}>
+                            <Copy className="h-4 w-4" />
+                        </Button>
                     </div>
                     ))}
                 </div>
@@ -199,50 +174,18 @@ export function ProjectCard({ project, onEdit, onDelete, allSnippets }: ProjectC
       </CardContent>
 
       <CardFooter className="flex-wrap gap-2 justify-start border-t px-6 py-4 mt-auto">
-        <TooltipProvider delayDuration={100}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="outline" size="sm" onClick={handleOpenVSCode}>
-                <Code className="h-4 w-4 mr-2" />
-                VS Code
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              Opens project in Visual Studio Code.
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        
-        <TooltipProvider delayDuration={100}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-               <Button variant="outline" size="sm" onClick={() => handleCopy(project.path, `Project path copied.`)}>
-                <Copy className="h-4 w-4 mr-2" />
-                Copy Path
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              Copy project's local folder path.
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Button variant="outline" size="sm" onClick={() => handleCopy(project.path, `Project path copied.`)}>
+            <Copy className="h-4 w-4 mr-2" />
+            Copy Path
+        </Button>
 
         {project.githubUrl && (
-           <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" asChild>
-                  <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
-                    <Github className="h-4 w-4 mr-2" />
-                    GitHub
-                  </a>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                Open repository on GitHub.
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+            <Button variant="outline" size="sm" asChild>
+                <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
+                <Github className="h-4 w-4 mr-2" />
+                GitHub
+                </a>
+            </Button>
         )}
       </CardFooter>
     </Card>
