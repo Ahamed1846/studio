@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Octokit } from "@octokit/rest";
@@ -173,7 +174,7 @@ export function GitHubInsights({ githubUrl }: GitHubInsightsProps) {
                       </a>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>View commit on GitHub</p>
+                      View commit on GitHub
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>

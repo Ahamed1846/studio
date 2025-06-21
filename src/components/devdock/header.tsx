@@ -1,3 +1,4 @@
+
 import { DevDockIcon } from "./icons";
 import { Button } from "@/components/ui/button";
 import { Upload, Download, Search } from "lucide-react";
@@ -46,7 +47,7 @@ export function Header({ onImport, onExport }: HeaderProps) {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Import from .devdock.json</p>
+                  Import from .devdock.json
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -59,7 +60,7 @@ export function Header({ onImport, onExport }: HeaderProps) {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Export to .devdock.json</p>
+                  Export to .devdock.json
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

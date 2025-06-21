@@ -170,7 +170,7 @@ export function ProjectCard({ project, onEdit, onDelete, allSnippets }: ProjectC
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>Copy command to clipboard.</p>
+                              Copy command to clipboard.
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -208,7 +208,7 @@ export function ProjectCard({ project, onEdit, onDelete, allSnippets }: ProjectC
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Opens project in Visual Studio Code.</p>
+              Opens project in Visual Studio Code.
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -222,7 +222,7 @@ export function ProjectCard({ project, onEdit, onDelete, allSnippets }: ProjectC
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Copy project's local folder path.</p>
+              Copy project's local folder path.
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -239,7 +239,7 @@ export function ProjectCard({ project, onEdit, onDelete, allSnippets }: ProjectC
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Open repository on GitHub.</p>
+                Open repository on GitHub.
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
