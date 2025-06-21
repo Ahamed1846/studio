@@ -11,30 +11,32 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <main className="flex-grow p-4 md:p-8">
+      <main className="container flex-grow py-8">
         <Tabs defaultValue="projects" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 max-w-lg mx-auto bg-muted">
-            <TabsTrigger value="projects">Projects</TabsTrigger>
-            <TabsTrigger value="snippets">Snippets</TabsTrigger>
-            <TabsTrigger value="git-help">Git Help</TabsTrigger>
-          </TabsList>
+          <div className="flex justify-center mb-8">
+            <TabsList>
+              <TabsTrigger value="projects">Projects</TabsTrigger>
+              <TabsTrigger value="snippets">Snippets</TabsTrigger>
+              <TabsTrigger value="git-help">Git Help</TabsTrigger>
+            </TabsList>
+          </div>
           <TabsContent value="projects">
             <Card>
-              <CardContent className="p-4 md:p-6">
+              <CardContent className="p-6">
                 <ProjectList />
               </CardContent>
             </Card>
           </TabsContent>
           <TabsContent value="snippets">
              <Card>
-              <CardContent className="p-4 md:p-6">
+              <CardContent className="p-6">
                 <SnippetList />
               </CardContent>
             </Card>
           </TabsContent>
           <TabsContent value="git-help">
              <Card>
-              <CardContent className="p-4 md:p-6">
+              <CardContent className="p-6">
                 <GitHelp />
               </CardContent>
             </Card>

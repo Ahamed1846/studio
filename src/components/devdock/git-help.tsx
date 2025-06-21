@@ -10,10 +10,10 @@ import { gitHelpItems } from "@/lib/constants";
 
 export function GitHelp() {
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
        <div className="text-center">
-         <h2 className="text-2xl font-bold font-headline">Git Command Quick Reference</h2>
-         <p className="text-muted-foreground">
+         <h2 className="text-3xl font-bold font-headline">Git Command Quick Reference</h2>
+         <p className="mt-2 text-muted-foreground">
            A quick list of common Git commands.
          </p>
       </div>

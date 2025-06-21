@@ -62,32 +62,38 @@ export function SnippetList() {
 
   if (!isInitialized) {
     return (
-      <div className="space-y-4">
-        <div className="flex justify-between items-center gap-4">
-            <Skeleton className="h-10 flex-1" />
-            <Skeleton className="h-10 w-36" />
+      <div className="space-y-8">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="space-y-2">
+                <Skeleton className="h-8 w-56" />
+                <Skeleton className="h-4 w-72" />
+            </div>
+            <div className="flex items-center gap-2 w-full md:w-auto">
+                <Skeleton className="h-10 w-48" />
+                <Skeleton className="h-10 w-36" />
+            </div>
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-64" />)}
+            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-64 rounded-lg" />)}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-        <div className="flex-1 w-full">
-            <h2 className="text-2xl font-bold font-headline">Code Snippets</h2>
-            <p className="text-sm text-muted-foreground">Your personal library of useful commands and code.</p>
+    <div className="space-y-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <h2 className="text-3xl font-bold font-headline">Code Snippets</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Your personal library of useful commands and code.</p>
         </div>
-        <div className="flex items-center gap-2 w-full md:w-auto">
-             <div className="relative flex-grow">
+        <div className="flex w-full items-center gap-2 md:w-auto">
+             <div className="relative flex-grow md:w-72">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                     type="search"
                     placeholder="Search snippets..."
-                    className="pl-10 w-full"
+                    className="w-full pl-10"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />

@@ -1,54 +1,8 @@
 import type { Project, Snippet, GitHelpItem } from "./types";
 
-export const initialProjects: Project[] = [
-  {
-    id: "1",
-    name: "DevDock App",
-    path: "/Users/dev/apps/devdock",
-    githubUrl: "https://github.com/example/devdock",
-  },
-  {
-    id: "2",
-    name: "My Portfolio",
-    path: "/Users/dev/sites/portfolio",
-    githubUrl: "https://github.com/example/portfolio",
-  },
-    {
-    id: "3",
-    name: "API Service",
-    path: "/Users/dev/services/api",
-    githubUrl: "",
-  },
-];
+export const initialProjects: Project[] = [];
 
-export const initialSnippets: Snippet[] = [
-  {
-    id: "s1",
-    title: "Force push to git",
-    content: "git push --force-with-lease",
-    tags: ["git", "cli"],
-  },
-  {
-    id: "s2",
-    title: "Create React Component",
-    content: `
-import React from 'react';
-
-function MyComponent() {
-  return <div>Hello, World!</div>;
-}
-
-export default MyComponent;
-`.trim(),
-    tags: ["react", "javascript"],
-  },
-  {
-    id: "s3",
-    title: "NPM install specific version",
-    content: "npm install package-name@1.2.3",
-    tags: ["npm", "node"],
-  },
-];
+export const initialSnippets: Snippet[] = [];
 
 export const gitHelpItems: GitHelpItem[] = [
     {

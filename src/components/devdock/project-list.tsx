@@ -50,26 +50,29 @@ export function ProjectList() {
 
   if (!isInitialized) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-8">
          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold font-headline">Projects</h2>
+            <div className="space-y-2">
+                <Skeleton className="h-8 w-48" />
+                <Skeleton className="h-4 w-64" />
+            </div>
             <Skeleton className="h-10 w-36" />
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-40" />)}
+            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-40 rounded-lg" />)}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <div className="flex-1">
-          <h2 className="text-2xl font-bold font-headline">Projects</h2>
-          <p className="text-sm text-muted-foreground">Manage your local development projects.</p>
+    <div className="space-y-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-3xl font-bold font-headline">Projects</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Manage your local development projects.</p>
         </div>
-        <Button onClick={handleAddProject} style={{ backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))' }}>
+        <Button onClick={handleAddProject} style={{ backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))' }} className="shrink-0">
           <PlusCircle className="mr-2 h-4 w-4" />
           Add Project
         </Button>

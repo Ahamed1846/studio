@@ -82,7 +82,7 @@ export function SnippetCard({ snippet, onEdit, onDelete }: SnippetCardProps) {
         </div>
       </CardHeader>
       <CardContent className="flex-grow">
-        <pre className="bg-muted p-3 rounded-md overflow-x-auto text-sm">
+        <pre className="bg-muted p-4 rounded-md overflow-x-auto text-sm">
           <code className="font-code">{snippet.content}</code>
         </pre>
       </CardContent>
