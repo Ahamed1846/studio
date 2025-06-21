@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { Project, Snippet } from "@/lib/types";
@@ -189,17 +190,17 @@ export function ProjectCard({ project, onEdit, onDelete, allSnippets }: ProjectC
 
       <CardFooter className="flex-wrap gap-2 justify-start border-t px-6 py-4 mt-auto">
         <Button variant="outline" size="sm" onClick={handleOpenVSCode}>
-          <Code />
+          <Code className="h-4 w-4 mr-2" />
           VS Code
         </Button>
         <Button variant="outline" size="sm" onClick={() => handleCopy(project.path, `Project path copied.`)}>
-          <Copy />
+          <Copy className="h-4 w-4 mr-2" />
           Copy Path
         </Button>
         {project.githubUrl && (
           <Button variant="outline" size="sm" asChild>
             <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
-              <Github />
+              <Github className="h-4 w-4 mr-2" />
               GitHub
             </a>
           </Button>

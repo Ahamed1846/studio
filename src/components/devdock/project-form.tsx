@@ -1,9 +1,10 @@
+
 "use client";
 
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import type { Project, Script } from "@/lib/types";
+import type { Project } from "@/lib/types";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -183,7 +184,7 @@ export function ProjectForm({ project, onSubmit, onClose }: ProjectFormProps) {
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" className="bg-accent text-accent-foreground hover:bg-accent/90">
+          <Button type="submit">
             {project ? "Save Changes" : "Add Project"}
           </Button>
         </div>

@@ -1,3 +1,4 @@
+
 export interface Script {
   id: string;
   name: string;
@@ -5,7 +6,7 @@ export interface Script {
 }
 
 export interface Project {
-  id: string;
+  id:string;
   name: string;
   path: string;
   githubUrl?: string;
