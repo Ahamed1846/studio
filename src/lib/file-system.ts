@@ -2,7 +2,7 @@
 
 import type { DevDockData } from './types';
 
-const DB_NAME = 'devdock-db';
+const DB_NAME = 'devdock-db-v2';
 const STORE_NAME = 'file-handles';
 const FILE_NAME = '.devdock.json';
 
@@ -62,7 +62,6 @@ async function verifyPermission(fileHandle: FileSystemHandle, readWrite = false)
 
 export async function getDirectoryHandle(prompt = false): Promise<FileSystemDirectoryHandle | null> {
     if (typeof window === 'undefined' || !window.showDirectoryPicker) {
-        console.error("File System Access API is not supported in this browser.");
         return null;
     }
 

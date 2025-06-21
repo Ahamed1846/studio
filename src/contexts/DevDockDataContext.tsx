@@ -26,6 +26,12 @@ export function DevDockDataProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
+    if (typeof window === 'undefined' || !window.showDirectoryPicker) {
+        setStatus('error');
+        setError('File System Access API is not supported in this browser. Please use a compatible browser like Chrome or Edge.');
+        return;
+    }
+      
     setStatus('loading');
     try {
       const loadedData = await loadDataFromFile();
