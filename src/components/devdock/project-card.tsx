@@ -1,6 +1,6 @@
 "use client";
 
-import type { Project, Script, Snippet } from "@/lib/types";
+import type { Project, Snippet } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from "@/components/ui/card";
 import { Code, Copy, Github, Pencil, Trash2, Folder, Terminal, Sparkles } from "lucide-react";
@@ -20,7 +20,9 @@ import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useMemo } from "react";
 import { ScrollArea } from "../ui/scroll-area";
-import { Separator } from "../ui/separator";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { GitHubInsights } from "./github-insights";
+
 
 type ProjectCardProps = {
   project: Project;
@@ -166,9 +168,26 @@ export function ProjectCard({ project, onEdit, onDelete, allSnippets }: ProjectC
                 </div>
             </div>
         )}
+        {project.githubUrl && (
+          <div className="pt-2">
+            <Accordion type="single" collapsible className="w-full -mx-2">
+                <AccordionItem value="item-1" className="border-b-0">
+                    <AccordionTrigger className="text-sm font-semibold hover:no-underline px-2 py-1.5 rounded-md hover:bg-muted/70">
+                        <div className="flex items-center gap-2">
+                            <Github className="h-4 w-4" />
+                            <span>GitHub Insights</span>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pt-2">
+                        <GitHubInsights githubUrl={project.githubUrl} />
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
+          </div>
+        )}
       </CardContent>
 
-      <CardFooter className="flex-wrap gap-2 justify-start border-t px-6 pt-4 mt-auto">
+      <CardFooter className="flex-wrap gap-2 justify-start border-t px-6 py-4 mt-auto">
         <Button variant="outline" size="sm" onClick={handleOpenVSCode}>
           <Code />
           VS Code
