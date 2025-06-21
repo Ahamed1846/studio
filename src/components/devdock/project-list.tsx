@@ -15,10 +15,10 @@ import {
 } from "@/components/ui/dialog";
 import { ProjectForm } from "./project-form";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PermissionRequiredView, ErrorView } from "./shared-views";
+import { ErrorView } from "./shared-views";
 
 export function ProjectList() {
-  const { projects, status, error, grantPermission, addProject, updateProject, deleteProject } = useDevDock();
+  const { projects, status, error, addProject, updateProject, deleteProject } = useDevDock();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
 
@@ -61,10 +61,6 @@ export function ProjectList() {
         </div>
       </div>
     );
-  }
-
-  if (status === 'permission-required') {
-    return <PermissionRequiredView grantPermission={grantPermission} />;
   }
 
   if (status === 'error') {

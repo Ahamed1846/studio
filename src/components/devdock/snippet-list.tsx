@@ -16,11 +16,11 @@ import {
 } from "@/components/ui/dialog";
 import { SnippetForm } from "./snippet-form";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PermissionRequiredView, ErrorView } from "./shared-views";
+import { ErrorView } from "./shared-views";
 
 
 export function SnippetList() {
-  const { snippets, status, error, grantPermission, addSnippet, updateSnippet, deleteSnippet } = useDevDock();
+  const { snippets, status, error, addSnippet, updateSnippet, deleteSnippet } = useDevDock();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingSnippet, setEditingSnippet] = useState<Snippet | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -78,10 +78,6 @@ export function SnippetList() {
         </div>
       </div>
     );
-  }
-
-  if (status === 'permission-required') {
-    return <PermissionRequiredView grantPermission={grantPermission} />;
   }
 
   if (status === 'error') {
