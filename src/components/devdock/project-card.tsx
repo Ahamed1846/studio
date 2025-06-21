@@ -23,6 +23,7 @@ import { useMemo } from "react";
 import { ScrollArea } from "../ui/scroll-area";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { GitHubInsights } from "./github-insights";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 
 
 type ProjectCardProps = {
@@ -161,9 +162,18 @@ export function ProjectCard({ project, onEdit, onDelete, allSnippets }: ProjectC
                         <Terminal className="h-4 w-4 text-muted-foreground" />
                         <p className="text-sm font-mono truncate" title={script.command}>{script.name}</p>
                         </div>
-                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleCopy(script.command, `Command "${script.name}" copied.`)}>
-                        <Copy className="h-4 w-4" />
-                        </Button>
+                        <TooltipProvider delayDuration={100}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleCopy(script.command, `Command "${script.name}" copied.`)}>
+                                <Copy className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Copy command</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                     </div>
                     ))}
                 </div>
