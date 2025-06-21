@@ -7,7 +7,7 @@ import type { Snippet } from "@/lib/types";
 import { SnippetCard } from "./snippet-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PlusCircle, Search, FileWarning, Star } from "lucide-react";
+import { PlusCircle, Search, FileWarning, Star, Code } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -46,8 +46,8 @@ export function SnippetList() {
         )
     );
 
-    const favorites = filtered.filter(s => s.isFavorite);
-    const others = filtered.filter(s => !s.isFavorite);
+    const favorites = filtered.filter(s => s.isFavorite).sort((a, b) => a.title.localeCompare(b.title));
+    const others = filtered.filter(s => !s.isFavorite).sort((a, b) => a.title.localeCompare(b.title));
     
     return { favoriteSnippets: favorites, otherSnippets: others };
   }, [snippets, searchTerm, status]);
@@ -56,12 +56,12 @@ export function SnippetList() {
     return (
       <div className="space-y-8">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="space-y-2">
-                <Skeleton className="h-8 w-56" />
-                <Skeleton className="h-4 w-72" />
+            <div className="space-y-2 w-full md:w-auto">
+                <Skeleton className="h-10 w-56" />
+                <Skeleton className="h-5 w-72" />
             </div>
             <div className="flex items-center gap-2 w-full md:w-auto">
-                <Skeleton className="h-10 flex-grow" />
+                <Skeleton className="h-10 flex-grow md:w-72" />
                 <Skeleton className="h-10 w-36" />
             </div>
         </div>
@@ -94,21 +94,21 @@ export function SnippetList() {
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-            <h2 className="text-3xl font-bold font-headline">Code Snippets</h2>
-            <p className="mt-1 text-muted-foreground">Your personal library of useful commands and code.</p>
+            <h2 className="text-3xl font-bold tracking-tight">Code Snippets</h2>
+            <p className="mt-1 text-lg text-muted-foreground">Your personal library of useful commands and code.</p>
         </div>
         <div className="flex w-full items-center gap-2 md:w-auto">
              <div className="relative flex-grow md:w-72">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                     type="search"
-                    placeholder="Search snippets..."
+                    placeholder="Search by title or tag..."
                     className="w-full pl-10"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-            <Button onClick={() => openSnippetForm()} className="shrink-0 bg-accent text-accent-foreground hover:bg-accent/90">
+            <Button onClick={() => openSnippetForm()} className="shrink-0 bg-primary text-primary-foreground hover:bg-primary/90">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Add Snippet
             </Button>
@@ -116,44 +116,44 @@ export function SnippetList() {
       </div>
 
       {favoriteSnippets.length === 0 && otherSnippets.length === 0 ? (
-         <div className="text-center py-20 border-2 border-dashed rounded-xl bg-card">
-           <div className="flex justify-center items-center w-16 h-16 mx-auto bg-muted rounded-full mb-4">
-              <FileWarning className="h-8 w-8 text-muted-foreground" />
+         <div className="text-center py-16 px-4 border-2 border-dashed rounded-xl bg-card">
+           <div className="flex justify-center items-center w-16 h-16 mx-auto bg-muted rounded-full mb-6 text-muted-foreground">
+              {searchTerm ? <Search className="h-8 w-8" /> : <Code className="h-8 w-8" />}
             </div>
-            <h3 className="mt-4 text-xl font-semibold">
-                {searchTerm ? `No Results Found` : "No Snippets Found"}
+            <h3 className="mt-4 text-2xl font-semibold">
+                {searchTerm ? `No Results Found` : "No Snippets Yet"}
             </h3>
-            <p className="mt-2 text-base text-muted-foreground">
-                {searchTerm ? `Your search for "${searchTerm}" did not return any results.` : "Get started by adding your first snippet."}
+            <p className="mt-2 text-base text-muted-foreground max-w-md mx-auto">
+                {searchTerm ? `Your search for "${searchTerm}" did not return any results. Try a different query.` : "Get started by adding your first code snippet. It's great for saving common commands."}
             </p>
              <div className="mt-6">
-                <Button onClick={() => openSnippetForm()} className="bg-accent text-accent-foreground hover:bg-accent/90">
+                <Button onClick={() => openSnippetForm()} className="bg-primary text-primary-foreground hover:bg-primary/90">
                     <PlusCircle className="mr-2 h-4 w-4" />
-                    Add Snippet
+                    Add Your First Snippet
                 </Button>
             </div>
         </div>
       ) : (
-        <div className="space-y-8">
+        <div className="space-y-10">
             {favoriteSnippets.length > 0 && (
-                <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                        <Star className="h-5 w-5 text-yellow-500" />
-                        <h3 className="text-xl font-semibold">Favorites</h3>
+                <section className="space-y-4">
+                    <div className="flex items-center gap-3">
+                        <Star className="h-6 w-6 text-amber-500" />
+                        <h3 className="text-2xl font-bold tracking-tight">Favorites</h3>
                     </div>
                     {renderSnippetList(favoriteSnippets)}
-                </div>
+                </section>
             )}
             
             {favoriteSnippets.length > 0 && otherSnippets.length > 0 && <Separator />}
 
             {otherSnippets.length > 0 && (
-                <div className="space-y-4">
+                <section className="space-y-4">
                    {favoriteSnippets.length > 0 && (
-                     <h3 className="text-xl font-semibold">Other Snippets</h3>
+                     <h3 className="text-2xl font-bold tracking-tight">Other Snippets</h3>
                    )}
                    {renderSnippetList(otherSnippets)}
-                </div>
+                </section>
             )}
         </div>
       )}
@@ -162,15 +162,15 @@ export function SnippetList() {
         open={openDialog === 'addSnippet' || openDialog === 'editSnippet'} 
         onOpenChange={(isOpen) => !isOpen && closeDialog()}
       >
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[525px]">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-2xl">
               {editingSnippet ? "Edit Snippet" : "Add New Snippet"}
             </DialogTitle>
             <DialogDescription>
               {editingSnippet
                 ? "Update the details of your code snippet."
-                : "Save a new command or code snippet for later."}
+                : "Save a new command or piece of code for easy access later."}
             </DialogDescription>
           </DialogHeader>
           <SnippetForm

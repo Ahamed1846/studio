@@ -19,25 +19,25 @@ export function Header({ onImport, onExport }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
+      <div className="container flex h-16 items-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mr-auto flex items-center">
-          <DevDockIcon className="h-6 w-6 mr-2" />
-          <span className="font-bold font-headline">DevDock</span>
+          <DevDockIcon className="h-7 w-7 mr-3 text-primary" />
+          <span className="text-xl font-bold tracking-tight">DevDock</span>
         </div>
         <div className="flex items-center gap-2">
             <Button
               variant="outline"
-              className="relative h-9 w-full justify-start rounded-[0.5rem] bg-background text-sm font-normal text-muted-foreground shadow-none sm:w-64"
+              className="relative h-10 w-full justify-start rounded-md bg-background text-sm font-normal text-muted-foreground shadow-none sm:pr-12 md:w-40 lg:w-64"
               onClick={() => setShowCommandPalette(true)}
             >
               <Search className="h-4 w-4 mr-2" />
               <span className="hidden lg:inline-flex">Search actions...</span>
               <span className="inline-flex lg:hidden">Search...</span>
-              <kbd className="pointer-events-none absolute right-[0.3rem] top-[0.3rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
-                <span className="text-xs">⌘</span>K
+              <kbd className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 hidden h-6 select-none items-center gap-1 rounded border bg-muted px-2 font-mono text-[10px] font-medium opacity-100 sm:flex">
+                <span className="text-base">⌘</span>K
               </kbd>
             </Button>
-            <TooltipProvider>
+            <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button variant="ghost" size="icon" onClick={onImport}>
@@ -50,7 +50,7 @@ export function Header({ onImport, onExport }: HeaderProps) {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-             <TooltipProvider>
+             <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button variant="ghost" size="icon" onClick={onExport}>

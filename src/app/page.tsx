@@ -86,27 +86,25 @@ export default function Home() {
         className="hidden"
         accept=".json,application/json"
       />
-      <main className="flex-grow py-8 md:py-12">
-        <div className="container max-w-7xl">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <div className="flex justify-center mb-8">
-              <TabsList>
-                <TabsTrigger value="projects">Projects</TabsTrigger>
-                <TabsTrigger value="snippets">Snippets</TabsTrigger>
-                <TabsTrigger value="git-help">Git Help</TabsTrigger>
-              </TabsList>
-            </div>
-            <TabsContent value="projects">
-              <ProjectList />
-            </TabsContent>
-            <TabsContent value="snippets">
-              <SnippetList />
-            </TabsContent>
-            <TabsContent value="git-help">
-              <GitHelp />
-            </TabsContent>
-          </Tabs>
-        </div>
+      <main className="flex-grow container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <div className="flex justify-center mb-8">
+            <TabsList className="grid w-full max-w-md grid-cols-3">
+              <TabsTrigger value="projects">Projects</TabsTrigger>
+              <TabsTrigger value="snippets">Snippets</TabsTrigger>
+              <TabsTrigger value="git-help">Git Help</TabsTrigger>
+            </TabsList>
+          </div>
+          <TabsContent value="projects">
+            <ProjectList />
+          </TabsContent>
+          <TabsContent value="snippets">
+            <SnippetList />
+          </TabsContent>
+          <TabsContent value="git-help">
+            <GitHelp />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );

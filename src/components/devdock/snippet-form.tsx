@@ -53,7 +53,7 @@ export function SnippetForm({ snippet, onSubmit, onClose }: SnippetFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="title"
@@ -61,7 +61,7 @@ export function SnippetForm({ snippet, onSubmit, onClose }: SnippetFormProps) {
             <FormItem>
               <FormLabel>Title</FormLabel>
               <FormControl>
-                <Input placeholder="Git Commit All" {...field} />
+                <Input placeholder="e.g. Git Commit All" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -72,9 +72,9 @@ export function SnippetForm({ snippet, onSubmit, onClose }: SnippetFormProps) {
           name="tags"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tags</FormLabel>
+              <FormLabel>Tags (Optional)</FormLabel>
               <FormControl>
-                <Input placeholder="git, cli, productivity" {...field} />
+                <Input placeholder="e.g. git, cli, productivity" {...field} />
               </FormControl>
                <FormDescription>
                 Enter tags separated by commas.
@@ -92,7 +92,7 @@ export function SnippetForm({ snippet, onSubmit, onClose }: SnippetFormProps) {
               <FormControl>
                 <Textarea
                   placeholder='git add . && git commit -m "feat: new feature"'
-                  className="font-code min-h-[120px]"
+                  className="font-mono min-h-[150px] text-sm"
                   {...field}
                 />
               </FormControl>
@@ -104,7 +104,7 @@ export function SnippetForm({ snippet, onSubmit, onClose }: SnippetFormProps) {
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" className="bg-accent text-accent-foreground hover:bg-accent/90">
+          <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90">
             {snippet ? "Save Changes" : "Add Snippet"}
           </Button>
         </div>
