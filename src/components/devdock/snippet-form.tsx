@@ -28,7 +28,7 @@ type SnippetFormValues = z.infer<typeof snippetSchema>;
 
 type SnippetFormProps = {
   snippet?: Snippet | null;
-  onSubmit: (data: Snippet) => void;
+  onSubmit: (data: Omit<Snippet, "id" | "isFavorite">) => void;
   onClose: () => void;
 };
 
@@ -45,7 +45,6 @@ export function SnippetForm({ snippet, onSubmit, onClose }: SnippetFormProps) {
   const handleSubmit = (data: SnippetFormValues) => {
     const tagsArray = data.tags ? data.tags.split(",").map(tag => tag.trim()).filter(Boolean) : [];
     onSubmit({
-      id: snippet?.id || crypto.randomUUID(),
       title: data.title,
       tags: tagsArray,
       content: data.content,

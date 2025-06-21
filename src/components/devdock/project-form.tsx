@@ -1,9 +1,9 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import type { Project } from "@/lib/types";
+import type { Project, Script } from "@/lib/types";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,20 +13,31 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { PlusCircle, Trash2 } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+
+const scriptSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1, "Script name is required."),
+  command: z.string().min(1, "Command is required."),
+});
 
 const projectSchema = z.object({
   name: z.string().min(1, "Project name is required."),
   path: z.string().min(1, "Folder path is required."),
   githubUrl: z.string().url("Please enter a valid URL.").optional().or(z.literal('')),
+  tags: z.string().optional(),
+  scripts: z.array(scriptSchema).optional(),
 });
 
 type ProjectFormValues = z.infer<typeof projectSchema>;
 
 type ProjectFormProps = {
   project?: Project | null;
-  onSubmit: (data: ProjectFormValues) => void;
+  onSubmit: (data: Omit<Project, 'id'>) => void;
   onClose: () => void;
 };
 
@@ -37,16 +48,29 @@ export function ProjectForm({ project, onSubmit, onClose }: ProjectFormProps) {
       name: project?.name || "",
       path: project?.path || "",
       githubUrl: project?.githubUrl || "",
+      tags: project?.tags?.join(", ") || "",
+      scripts: project?.scripts || [],
     },
   });
 
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "scripts",
+  });
+
   const handleSubmit = (data: ProjectFormValues) => {
-    onSubmit(data);
+    const tagsArray = data.tags ? data.tags.split(",").map(tag => tag.trim()).filter(Boolean) : [];
+    const finalData = {
+      ...data,
+      tags: tagsArray,
+      scripts: data.scripts || []
+    };
+    onSubmit(finalData);
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
         <FormField
           control={form.control}
           name="name"
@@ -86,6 +110,75 @@ export function ProjectForm({ project, onSubmit, onClose }: ProjectFormProps) {
             </FormItem>
           )}
         />
+         <FormField
+          control={form.control}
+          name="tags"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tags (Optional)</FormLabel>
+              <FormControl>
+                <Input placeholder="frontend, react, work" {...field} />
+              </FormControl>
+              <FormDescription>
+                Enter tags separated by commas.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Separator />
+
+        <div>
+            <FormLabel>Custom Scripts</FormLabel>
+             <FormDescription className="mb-4">Add commands you frequently run for this project.</FormDescription>
+            <div className="space-y-4">
+                 {fields.map((field, index) => (
+                    <div key={field.id} className="flex items-end gap-2 p-3 border rounded-lg">
+                        <FormField
+                            control={form.control}
+                            name={`scripts.${index}.name`}
+                            render={({ field }) => (
+                                <FormItem className="flex-grow">
+                                    <FormLabel className="text-xs">Name</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Run Dev Server" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                         <FormField
+                            control={form.control}
+                            name={`scripts.${index}.command`}
+                            render={({ field }) => (
+                                <FormItem className="flex-grow">
+                                     <FormLabel className="text-xs">Command</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="npm run dev" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
+                            <Trash2 className="h-4 w-4"/>
+                        </Button>
+                    </div>
+                ))}
+
+                <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => append({ id: crypto.randomUUID(), name: "", command: "" })}
+                >
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Add Script
+                </Button>
+            </div>
+        </div>
+
         <div className="flex justify-end space-x-2 pt-4">
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel

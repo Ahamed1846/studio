@@ -4,7 +4,7 @@ import type { Snippet } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Copy, Pencil, Trash2 } from "lucide-react";
+import { Copy, Pencil, Trash2, Star } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
@@ -18,14 +18,16 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 type SnippetCardProps = {
   snippet: Snippet;
   onEdit: (snippet: Snippet) => void;
   onDelete: (id: string) => void;
+  onToggleFavorite: (id: string) => void;
 };
 
-export function SnippetCard({ snippet, onEdit, onDelete }: SnippetCardProps) {
+export function SnippetCard({ snippet, onEdit, onDelete, onToggleFavorite }: SnippetCardProps) {
   const { toast } = useToast();
   const [isCopied, setIsCopied] = useState(false);
 
@@ -45,6 +47,10 @@ export function SnippetCard({ snippet, onEdit, onDelete }: SnippetCardProps) {
         <CardTitle className="flex items-start justify-between">
           <span className="font-bold">{snippet.title}</span>
           <div className="flex items-center space-x-1">
+             <Button variant="ghost" size="icon" onClick={() => onToggleFavorite(snippet.id)}>
+              <Star className={cn("h-4 w-4", snippet.isFavorite ? "fill-yellow-400 text-yellow-500" : "text-muted-foreground")} />
+              <span className="sr-only">Favorite Snippet</span>
+            </Button>
             <Button variant="ghost" size="icon" onClick={() => onEdit(snippet)}>
               <Pencil className="h-4 w-4" />
               <span className="sr-only">Edit Snippet</span>

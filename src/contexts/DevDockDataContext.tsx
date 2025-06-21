@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import type { Project, Snippet, DevDockData } from '@/lib/types';
-import { loadData, saveData } from '@/lib/file-system';
+import { loadData, saveData, DevDockDataSchema } from '@/lib/file-system';
 
 type DevDockContextType = {
   projects: Project[];
@@ -12,9 +12,13 @@ type DevDockContextType = {
   addProject: (project: Omit<Project, 'id'>) => Promise<void>;
   updateProject: (project: Project) => Promise<void>;
   deleteProject: (id: string) => Promise<void>;
-  addSnippet: (snippet: Snippet) => Promise<void>;
+  addSnippet: (snippet: Omit<Snippet, 'id' | 'isFavorite'>) => Promise<void>;
   updateSnippet: (snippet: Snippet) => Promise<void>;
   deleteSnippet: (id: string) => Promise<void>;
+  toggleSnippetFavorite: (id: string) => Promise<void>;
+  exportData: () => string;
+  importData: (jsonString: string) => Promise<void>;
+  refreshData: () => Promise<void>;
 };
 
 const DevDockContext = createContext<DevDockContextType | undefined>(undefined);
@@ -29,10 +33,21 @@ export function DevDockDataProvider({ children }: { children: ReactNode }) {
     try {
       const loadedData = await loadData();
       if (loadedData) {
-        setData(loadedData);
+        // Data migration for new fields
+        const migratedData = {
+            projects: loadedData.projects.map(p => ({
+                ...p,
+                tags: p.tags || [],
+                scripts: p.scripts || [],
+            })),
+            snippets: loadedData.snippets.map(s => ({
+                ...s,
+                isFavorite: s.isFavorite || false,
+            })),
+        };
+        setData(migratedData);
         setStatus('ready');
       } else {
-        // This case should ideally not be hit with IndexedDB unless there's an error.
         setData({ projects: [], snippets: [] });
         setStatus('ready');
       }
@@ -47,7 +62,7 @@ export function DevDockDataProvider({ children }: { children: ReactNode }) {
     performLoadData();
   }, [performLoadData]);
 
-  const updateData = async (newData: DevDockData) => {
+  const updateAndSaveData = async (newData: DevDockData) => {
     try {
         await saveData(newData);
         setData(newData);
@@ -55,13 +70,14 @@ export function DevDockDataProvider({ children }: { children: ReactNode }) {
         console.error(err);
         setError('Failed to save data.');
         setStatus('error');
+        throw err;
     }
   };
 
   const addProject = async (projectData: Omit<Project, 'id'>) => {
     const newProject: Project = { ...projectData, id: crypto.randomUUID() };
     const newData = { ...data, projects: [...data.projects, newProject] };
-    await updateData(newData);
+    await updateAndSaveData(newData);
   };
 
   const updateProject = async (updatedProject: Project) => {
@@ -69,17 +85,22 @@ export function DevDockDataProvider({ children }: { children: ReactNode }) {
       ...data,
       projects: data.projects.map((p) => (p.id === updatedProject.id ? updatedProject : p)),
     };
-    await updateData(newData);
+    await updateAndSaveData(newData);
   };
 
   const deleteProject = async (id: string) => {
     const newData = { ...data, projects: data.projects.filter((p) => p.id !== id) };
-    await updateData(newData);
+    await updateAndSaveData(newData);
   };
   
-  const addSnippet = async (snippet: Snippet) => {
-    const newData = { ...data, snippets: [...data.snippets, snippet] };
-    await updateData(newData);
+  const addSnippet = async (snippetData: Omit<Snippet, 'id' | 'isFavorite'>) => {
+    const newSnippet: Snippet = { 
+        ...snippetData, 
+        id: crypto.randomUUID(),
+        isFavorite: false 
+    };
+    const newData = { ...data, snippets: [...data.snippets, newSnippet] };
+    await updateAndSaveData(newData);
   };
   
   const updateSnippet = async (updatedSnippet: Snippet) => {
@@ -87,13 +108,37 @@ export function DevDockDataProvider({ children }: { children: ReactNode }) {
       ...data,
       snippets: data.snippets.map((s) => (s.id === updatedSnippet.id ? updatedSnippet : s)),
     };
-    await updateData(newData);
+    await updateAndSaveData(newData);
   };
+
+  const toggleSnippetFavorite = async (id: string) => {
+      const newData = {
+          ...data,
+          snippets: data.snippets.map((s) => s.id === id ? {...s, isFavorite: !s.isFavorite} : s)
+      }
+      await updateAndSaveData(newData);
+  }
   
   const deleteSnippet = async (id: string) => {
     const newData = { ...data, snippets: data.snippets.filter((s) => s.id !== id) };
-    await updateData(newData);
+    await updateAndSaveData(newData);
   };
+
+  const exportData = (): string => {
+    return JSON.stringify(data, null, 2);
+  };
+
+  const importData = async (jsonString: string) => {
+      try {
+          const parsedData = JSON.parse(jsonString);
+          const validatedData = DevDockDataSchema.parse(parsedData);
+          await updateAndSaveData(validatedData);
+      } catch (error) {
+          console.error("Import error:", error);
+          throw new Error("Invalid file format or content.");
+      }
+  };
+
 
   const value = {
     projects: data.projects,
@@ -105,7 +150,11 @@ export function DevDockDataProvider({ children }: { children: ReactNode }) {
     deleteProject,
     addSnippet,
     updateSnippet,
-    deleteSnippet
+    deleteSnippet,
+    toggleSnippetFavorite,
+    exportData,
+    importData,
+    refreshData: performLoadData,
   };
 
   return <DevDockContext.Provider value={value}>{children}</DevDockContext.Provider>;

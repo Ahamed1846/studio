@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useDevDock } from "@/contexts/DevDockDataContext";
 import type { Project } from "@/lib/types";
 import { ProjectCard } from "./project-card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, FileWarning } from "lucide-react";
+import { PlusCircle, FileWarning, Search } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,11 +16,13 @@ import {
 import { ProjectForm } from "./project-form";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorView } from "./shared-views";
+import { Input } from "@/components/ui/input";
 
 export function ProjectList() {
   const { projects, status, error, addProject, updateProject, deleteProject } = useDevDock();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleAddProjectClick = () => {
     setEditingProject(null);
@@ -46,6 +48,17 @@ export function ProjectList() {
     setEditingProject(null);
   };
 
+  const filteredProjects = useMemo(() => {
+    if (status !== 'ready') return [];
+    return projects.filter(
+      (project) =>
+        project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        project.tags.some((tag) =>
+          tag.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+    );
+  }, [projects, searchTerm, status]);
+
   if (status === 'loading') {
     return (
       <div className="space-y-8">
@@ -54,7 +67,10 @@ export function ProjectList() {
                 <Skeleton className="h-8 w-48" />
                 <Skeleton className="h-4 w-64" />
             </div>
-            <Skeleton className="h-10 w-36 shrink-0" />
+            <div className="flex items-center gap-2 w-full md:w-auto">
+                <Skeleton className="h-10 flex-grow" />
+                <Skeleton className="h-10 w-36" />
+            </div>
         </div>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-52 rounded-lg" />)}
@@ -69,20 +85,32 @@ export function ProjectList() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 className="text-3xl font-bold font-headline">Projects</h2>
           <p className="mt-1 text-muted-foreground">Manage your local development projects.</p>
         </div>
-        <Button onClick={handleAddProjectClick} className="shrink-0 bg-accent text-accent-foreground hover:bg-accent/90">
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Add Project
-        </Button>
+        <div className="flex w-full items-center gap-2 md:w-auto">
+             <div className="relative flex-grow md:w-72">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                    type="search"
+                    placeholder="Search projects by name or tag..."
+                    className="w-full pl-10"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </div>
+            <Button onClick={handleAddProjectClick} className="shrink-0 bg-accent text-accent-foreground hover:bg-accent/90">
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Add Project
+            </Button>
+        </div>
       </div>
 
-      {projects.length > 0 ? (
+      {projects.length > 0 && filteredProjects.length > 0 ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => (
+          {filteredProjects.map((project) => (
             <ProjectCard
               key={project.id}
               project={project}
@@ -96,8 +124,12 @@ export function ProjectList() {
             <div className="flex justify-center items-center w-16 h-16 mx-auto bg-muted rounded-full mb-4">
               <FileWarning className="h-8 w-8 text-muted-foreground" />
             </div>
-            <h3 className="mt-4 text-xl font-semibold">No Projects Found</h3>
-            <p className="mt-2 text-base text-muted-foreground">Get started by adding your first project.</p>
+            <h3 className="mt-4 text-xl font-semibold">
+              {searchTerm ? 'No Projects Found' : 'No Projects Yet'}
+            </h3>
+            <p className="mt-2 text-base text-muted-foreground">
+              {searchTerm ? `Your search for "${searchTerm}" did not return any results.` : 'Get started by adding your first project.'}
+            </p>
             <div className="mt-6">
                 <Button onClick={handleAddProjectClick} className="bg-accent text-accent-foreground hover:bg-accent/90">
                     <PlusCircle className="mr-2 h-4 w-4" />
@@ -108,7 +140,7 @@ export function ProjectList() {
       )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[525px]">
           <DialogHeader>
             <DialogTitle>
               {editingProject ? "Edit Project" : "Add New Project"}

@@ -6,7 +6,7 @@ import type { Snippet } from "@/lib/types";
 import { SnippetCard } from "./snippet-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PlusCircle, Search, FileWarning } from "lucide-react";
+import { PlusCircle, Search, FileWarning, Star } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -17,10 +17,11 @@ import {
 import { SnippetForm } from "./snippet-form";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorView } from "./shared-views";
+import { Separator } from "@/components/ui/separator";
 
 
 export function SnippetList() {
-  const { snippets, status, error, addSnippet, updateSnippet, deleteSnippet } = useDevDock();
+  const { snippets, status, error, addSnippet, updateSnippet, deleteSnippet, toggleSnippetFavorite } = useDevDock();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingSnippet, setEditingSnippet] = useState<Snippet | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -39,25 +40,31 @@ export function SnippetList() {
     await deleteSnippet(id);
   };
 
-  const handleFormSubmit = async (snippet: Snippet) => {
+  const handleFormSubmit = async (data: Omit<Snippet, "id" | "isFavorite">) => {
     if (editingSnippet) {
-      await updateSnippet(snippet);
+      await updateSnippet({ ...editingSnippet, ...data });
     } else {
-      await addSnippet(snippet);
+      await addSnippet(data);
     }
     setIsDialogOpen(false);
     setEditingSnippet(null);
   };
 
-  const filteredSnippets = useMemo(() => {
-    if (status !== 'ready') return [];
-    return snippets.filter(
+  const { favoriteSnippets, otherSnippets } = useMemo(() => {
+    if (status !== 'ready') return { favoriteSnippets: [], otherSnippets: [] };
+    
+    const filtered = snippets.filter(
       (snippet) =>
         snippet.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         snippet.tags.some((tag) =>
           tag.toLowerCase().includes(searchTerm.toLowerCase())
         )
     );
+
+    const favorites = filtered.filter(s => s.isFavorite);
+    const others = filtered.filter(s => !s.isFavorite);
+    
+    return { favoriteSnippets: favorites, otherSnippets: others };
   }, [snippets, searchTerm, status]);
 
   if (status === 'loading') {
@@ -84,6 +91,20 @@ export function SnippetList() {
     return <ErrorView error={error} />;
   }
 
+  const renderSnippetList = (list: Snippet[]) => (
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {list.map((snippet) => (
+        <SnippetCard
+            key={snippet.id}
+            snippet={snippet}
+            onEdit={handleEditSnippetClick}
+            onDelete={handleDeleteSnippet}
+            onToggleFavorite={toggleSnippetFavorite}
+        />
+        ))}
+    </div>
+  );
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -109,19 +130,8 @@ export function SnippetList() {
         </div>
       </div>
 
-      {filteredSnippets.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredSnippets.map((snippet) => (
-            <SnippetCard
-              key={snippet.id}
-              snippet={snippet}
-              onEdit={handleEditSnippetClick}
-              onDelete={handleDeleteSnippet}
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-20 border-2 border-dashed rounded-xl bg-card">
+      {favoriteSnippets.length === 0 && otherSnippets.length === 0 ? (
+         <div className="text-center py-20 border-2 border-dashed rounded-xl bg-card">
            <div className="flex justify-center items-center w-16 h-16 mx-auto bg-muted rounded-full mb-4">
               <FileWarning className="h-8 w-8 text-muted-foreground" />
             </div>
@@ -137,6 +147,29 @@ export function SnippetList() {
                     Add Snippet
                 </Button>
             </div>
+        </div>
+      ) : (
+        <div className="space-y-8">
+            {favoriteSnippets.length > 0 && (
+                <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                        <Star className="h-5 w-5 text-yellow-500" />
+                        <h3 className="text-xl font-semibold">Favorites</h3>
+                    </div>
+                    {renderSnippetList(favoriteSnippets)}
+                </div>
+            )}
+            
+            {favoriteSnippets.length > 0 && otherSnippets.length > 0 && <Separator />}
+
+            {otherSnippets.length > 0 && (
+                <div className="space-y-4">
+                   {favoriteSnippets.length > 0 && (
+                     <h3 className="text-xl font-semibold">Other Snippets</h3>
+                   )}
+                   {renderSnippetList(otherSnippets)}
+                </div>
+            )}
         </div>
       )}
 
