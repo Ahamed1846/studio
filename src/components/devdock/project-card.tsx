@@ -170,7 +170,7 @@ export function ProjectCard({ project, onEdit, onDelete, allSnippets }: ProjectC
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>Copy command</p>
+                              <p>Copy command to clipboard.</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -199,21 +199,50 @@ export function ProjectCard({ project, onEdit, onDelete, allSnippets }: ProjectC
       </CardContent>
 
       <CardFooter className="flex-wrap gap-2 justify-start border-t px-6 py-4 mt-auto">
-        <Button variant="outline" size="sm" onClick={handleOpenVSCode}>
-          <Code className="h-4 w-4 mr-2" />
-          VS Code
-        </Button>
-        <Button variant="outline" size="sm" onClick={() => handleCopy(project.path, `Project path copied.`)}>
-          <Copy className="h-4 w-4 mr-2" />
-          Copy Path
-        </Button>
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="outline" size="sm" onClick={handleOpenVSCode}>
+                <Code className="h-4 w-4 mr-2" />
+                VS Code
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Opens project in Visual Studio Code.</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+               <Button variant="outline" size="sm" onClick={() => handleCopy(project.path, `Project path copied.`)}>
+                <Copy className="h-4 w-4 mr-2" />
+                Copy Path
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Copy project's local folder path.</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
         {project.githubUrl && (
-          <Button variant="outline" size="sm" asChild>
-            <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
-              <Github className="h-4 w-4 mr-2" />
-              GitHub
-            </a>
-          </Button>
+           <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="sm" asChild>
+                  <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
+                    <Github className="h-4 w-4 mr-2" />
+                    GitHub
+                  </a>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Open repository on GitHub.</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
       </CardFooter>
     </Card>
