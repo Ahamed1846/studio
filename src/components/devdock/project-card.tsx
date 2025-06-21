@@ -1,9 +1,9 @@
 "use client";
 
-import type { Project, Script } from "@/lib/types";
+import type { Project, Script, Snippet } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from "@/components/ui/card";
-import { CodeXml, Copy, Github, Pencil, Trash2, Folder, Terminal } from "lucide-react";
+import { CodeXml, Copy, Github, Pencil, Trash2, Folder, Terminal, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
@@ -17,14 +17,18 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useMemo } from "react";
+import { ScrollArea } from "../ui/scroll-area";
 
 type ProjectCardProps = {
   project: Project;
+  allSnippets: Snippet[];
   onEdit: (project: Project) => void;
   onDelete: (id: string) => void;
 };
 
-export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
+export function ProjectCard({ project, onEdit, onDelete, allSnippets }: ProjectCardProps) {
   const { toast } = useToast();
 
   const handleCopy = (textToCopy: string, successMessage: string) => {
@@ -51,12 +55,53 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
     }
   };
 
+  const suggestedSnippets = useMemo(() => {
+    if (!project.tags || project.tags.length === 0 || !allSnippets) {
+        return [];
+    }
+    const projectTags = new Set(project.tags.map(t => t.toLowerCase()));
+    return allSnippets.filter(snippet => 
+        snippet.tags.some(tag => projectTags.has(tag.toLowerCase()))
+    );
+  }, [project.tags, allSnippets]);
+
   return (
     <Card className="flex flex-col h-full hover:shadow-lg transition-shadow duration-300">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-start justify-between">
           <span className="font-bold">{project.name}</span>
           <div className="flex items-center space-x-1">
+             {suggestedSnippets.length > 0 && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Sparkles className="h-4 w-4 text-yellow-500" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  <div className="grid gap-4">
+                    <div className="space-y-2">
+                      <h4 className="font-medium leading-none">Suggested Snippets</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Based on project tags.
+                      </p>
+                    </div>
+                    <ScrollArea className="h-48">
+                      <div className="grid gap-2 pr-2">
+                        {suggestedSnippets.map(snippet => (
+                          <div key={snippet.id} className="flex items-center justify-between text-sm p-2 bg-muted rounded-md">
+                            <span className="truncate" title={snippet.title}>{snippet.title}</span>
+                            <Button size="sm" variant="ghost" onClick={() => handleCopy(snippet.content, `Snippet "${snippet.title}" copied.`)}>
+                              <Copy className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            )}
             <Button variant="ghost" size="icon" onClick={() => onEdit(project)}>
               <Pencil className="h-4 w-4" />
               <span className="sr-only">Edit Project</span>

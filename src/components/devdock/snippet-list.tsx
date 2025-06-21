@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useDevDock } from "@/contexts/DevDockDataContext";
+import { useUIState } from "@/contexts/UIStateContext";
 import type { Snippet } from "@/lib/types";
 import { SnippetCard } from "./snippet-card";
 import { Button } from "@/components/ui/button";
@@ -22,23 +23,8 @@ import { Separator } from "@/components/ui/separator";
 
 export function SnippetList() {
   const { snippets, status, error, addSnippet, updateSnippet, deleteSnippet, toggleSnippetFavorite } = useDevDock();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingSnippet, setEditingSnippet] = useState<Snippet | null>(null);
+  const { openDialog, editingSnippet, openSnippetForm, closeDialog } = useUIState();
   const [searchTerm, setSearchTerm] = useState("");
-
-  const handleAddSnippetClick = () => {
-    setEditingSnippet(null);
-    setIsDialogOpen(true);
-  };
-
-  const handleEditSnippetClick = (snippet: Snippet) => {
-    setEditingSnippet(snippet);
-    setIsDialogOpen(true);
-  };
-
-  const handleDeleteSnippet = async (id: string) => {
-    await deleteSnippet(id);
-  };
 
   const handleFormSubmit = async (data: Omit<Snippet, "id" | "isFavorite">) => {
     if (editingSnippet) {
@@ -46,8 +32,7 @@ export function SnippetList() {
     } else {
       await addSnippet(data);
     }
-    setIsDialogOpen(false);
-    setEditingSnippet(null);
+    closeDialog();
   };
 
   const { favoriteSnippets, otherSnippets } = useMemo(() => {
@@ -97,8 +82,8 @@ export function SnippetList() {
         <SnippetCard
             key={snippet.id}
             snippet={snippet}
-            onEdit={handleEditSnippetClick}
-            onDelete={handleDeleteSnippet}
+            onEdit={() => openSnippetForm(snippet)}
+            onDelete={deleteSnippet}
             onToggleFavorite={toggleSnippetFavorite}
         />
         ))}
@@ -123,7 +108,7 @@ export function SnippetList() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-            <Button onClick={handleAddSnippetClick} className="shrink-0 bg-accent text-accent-foreground hover:bg-accent/90">
+            <Button onClick={() => openSnippetForm()} className="shrink-0 bg-accent text-accent-foreground hover:bg-accent/90">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Add Snippet
             </Button>
@@ -142,7 +127,7 @@ export function SnippetList() {
                 {searchTerm ? `Your search for "${searchTerm}" did not return any results.` : "Get started by adding your first snippet."}
             </p>
              <div className="mt-6">
-                <Button onClick={handleAddSnippetClick} className="bg-accent text-accent-foreground hover:bg-accent/90">
+                <Button onClick={() => openSnippetForm()} className="bg-accent text-accent-foreground hover:bg-accent/90">
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Add Snippet
                 </Button>
@@ -173,7 +158,10 @@ export function SnippetList() {
         </div>
       )}
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog 
+        open={openDialog === 'addSnippet' || openDialog === 'editSnippet'} 
+        onOpenChange={(isOpen) => !isOpen && closeDialog()}
+      >
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>
@@ -188,7 +176,7 @@ export function SnippetList() {
           <SnippetForm
             snippet={editingSnippet}
             onSubmit={handleFormSubmit}
-            onClose={() => setIsDialogOpen(false)}
+            onClose={closeDialog}
           />
         </DialogContent>
       </Dialog>

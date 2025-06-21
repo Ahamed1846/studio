@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useDevDock } from "@/contexts/DevDockDataContext";
 import { Header } from "@/components/devdock/header";
 import { ProjectList } from "@/components/devdock/project-list";
@@ -9,12 +9,14 @@ import { GitHelp } from "@/components/devdock/git-help";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { saveAs } from "file-saver";
+import { CommandPalette } from "@/components/devdock/command-palette";
 
 
 export default function Home() {
   const { exportData, importData, refreshData } = useDevDock();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [activeTab, setActiveTab] = useState("projects");
 
   const handleExport = () => {
     try {
@@ -64,7 +66,6 @@ export default function Home() {
           description: error.message || "Could not import data. Check file format.",
         });
       } finally {
-        // Reset file input
         if(fileInputRef.current) {
             fileInputRef.current.value = "";
         }
@@ -77,6 +78,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header onExport={handleExport} onImport={handleImportClick} />
+      <CommandPalette setActiveTab={setActiveTab} />
        <input
         type="file"
         ref={fileInputRef}
@@ -86,7 +88,7 @@ export default function Home() {
       />
       <main className="flex-grow py-8 md:py-12">
         <div className="container max-w-7xl">
-          <Tabs defaultValue="projects" className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <div className="flex justify-center mb-8">
               <TabsList>
                 <TabsTrigger value="projects">Projects</TabsTrigger>
