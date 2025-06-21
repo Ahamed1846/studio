@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -17,7 +18,6 @@ import { useDevDock } from "@/contexts/DevDockDataContext";
 import { useUIState } from "@/contexts/UIStateContext";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/ui/command";
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "../ui/button";
 
 type CommandPaletteProps = {
   setActiveTab: (tab: string) => void;
@@ -74,11 +74,11 @@ export function CommandPalette({ setActiveTab }: CommandPaletteProps) {
         
         <CommandGroup heading="Actions">
           <CommandItem onSelect={() => runCommand(() => openProjectForm())}>
-            <FilePlus2 className="mr-2" />
+            <FilePlus2 className="mr-2 h-4 w-4" />
             <span>Add New Project</span>
           </CommandItem>
           <CommandItem onSelect={() => runCommand(() => openSnippetForm())}>
-            <PlusCircle className="mr-2" />
+            <PlusCircle className="mr-2 h-4 w-4" />
             <span>Add New Snippet</span>
           </CommandItem>
         </CommandGroup>
@@ -87,58 +87,60 @@ export function CommandPalette({ setActiveTab }: CommandPaletteProps) {
         
         <CommandGroup heading="Navigation">
           <CommandItem onSelect={() => runCommand(() => setActiveTab("projects"))}>
-            <Home className="mr-2" />
+            <Home className="mr-2 h-4 w-4" />
             <span>Go to Projects</span>
           </CommandItem>
           <CommandItem onSelect={() => runCommand(() => setActiveTab("snippets"))}>
-            <FileText className="mr-2" />
+            <FileText className="mr-2 h-4 w-4" />
             <span>Go to Snippets</span>
           </CommandItem>
           <CommandItem onSelect={() => runCommand(() => setActiveTab("git-help"))}>
-            <GitBranch className="mr-2" />
+            <GitBranch className="mr-2 h-4 w-4" />
             <span>Go to Git Help</span>
           </CommandItem>
         </CommandGroup>
         
-        <CommandSeparator />
+        {projects.length > 0 && <CommandSeparator />}
 
-        <CommandGroup heading="Projects">
-          {projects.map((project) => (
-            <CommandGroup key={project.id} heading={project.name} value={`Project: ${project.name}`}>
-              <CommandItem onSelect={() => runCommand(() => handleOpenVSCode(project.path))}>
-                <CodeXml className="mr-2" />
-                <span>Open in VS Code</span>
-              </CommandItem>
-              <CommandItem onSelect={() => runCommand(() => handleCopy(project.path, 'Project path copied.'))}>
-                <Copy className="mr-2" />
-                <span>Copy Path</span>
-              </CommandItem>
-              {project.githubUrl && (
-                <CommandItem onSelect={() => runCommand(() => window.open(project.githubUrl, '_blank'))}>
-                  <Github className="mr-2" />
-                  <span>Open on GitHub</span>
-                </CommandItem>
-              )}
-               {project.scripts.map(script => (
-                <CommandItem key={script.id} onSelect={() => runCommand(() => handleCopy(script.command, `Script "${script.name}" copied.`))}>
-                    <Terminal className="mr-2"/>
-                    <span>Copy script: {script.name}</span>
-                </CommandItem>
-            ))}
-            </CommandGroup>
-          ))}
-        </CommandGroup>
+        {projects.length > 0 && (
+          <CommandGroup heading="Projects">
+            {projects.flatMap((project) => [
+              <CommandItem key={`${project.id}-vscode`} onSelect={() => runCommand(() => handleOpenVSCode(project.path))}>
+                  <CodeXml className="mr-2 h-4 w-4" />
+                  <span>{project.name}: Open in VS Code</span>
+              </CommandItem>,
+              <CommandItem key={`${project.id}-copypath`} onSelect={() => runCommand(() => handleCopy(project.path, 'Project path copied.'))}>
+                  <Copy className="mr-2 h-4 w-4" />
+                  <span>{project.name}: Copy Path</span>
+              </CommandItem>,
+              project.githubUrl && (
+                  <CommandItem key={`${project.id}-github`} onSelect={() => runCommand(() => window.open(project.githubUrl, '_blank'))}>
+                  <Github className="mr-2 h-4 w-4" />
+                  <span>{project.name}: Open on GitHub</span>
+                  </CommandItem>
+              ),
+              ...project.scripts.map(script => (
+                  <CommandItem key={`${project.id}-script-${script.id}`} onSelect={() => runCommand(() => handleCopy(script.command, `Script "${script.name}" copied.`))}>
+                      <Terminal className="mr-2 h-4 w-4"/>
+                      <span>{project.name}: Copy script: {script.name}</span>
+                  </CommandItem>
+              ))
+            ].filter(Boolean))}
+          </CommandGroup>
+        )}
 
-        <CommandSeparator />
+        {snippets.length > 0 && <CommandSeparator />}
 
-        <CommandGroup heading="Snippets">
-            {snippets.map(snippet => (
-                 <CommandItem key={snippet.id} value={`Snippet: ${snippet.title}`} onSelect={() => runCommand(() => handleCopy(snippet.content, `Snippet "${snippet.title}" copied.`))}>
-                    <Copy className="mr-2"/>
-                    <span>Copy: {snippet.title}</span>
-                </CommandItem>
-            ))}
-        </CommandGroup>
+        {snippets.length > 0 && (
+          <CommandGroup heading="Snippets">
+              {snippets.map(snippet => (
+                  <CommandItem key={`snippet-${snippet.id}`} onSelect={() => runCommand(() => handleCopy(snippet.content, `Snippet "${snippet.title}" copied.`))}>
+                      <Copy className="mr-2 h-4 w-4"/>
+                      <span>Copy Snippet: {snippet.title}</span>
+                  </CommandItem>
+              ))}
+          </CommandGroup>
+        )}
 
       </CommandList>
     </CommandDialog>
