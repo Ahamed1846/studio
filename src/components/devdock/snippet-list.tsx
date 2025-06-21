@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useDevDock } from "@/contexts/DevDockDataContext";
 import type { Snippet } from "@/lib/types";
 import { SnippetCard } from "./snippet-card";
 import { Button } from "@/components/ui/button";
@@ -15,42 +15,42 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { SnippetForm } from "./snippet-form";
-import { initialSnippets } from "@/lib/constants";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PermissionRequiredView, ErrorView } from "./shared-views";
+
 
 export function SnippetList() {
-  const [snippets, setSnippets, isInitialized] = useLocalStorage<Snippet[]>("devdock-snippets-final", initialSnippets);
+  const { snippets, status, error, grantPermission, addSnippet, updateSnippet, deleteSnippet } = useDevDock();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingSnippet, setEditingSnippet] = useState<Snippet | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const handleAddSnippet = () => {
+  const handleAddSnippetClick = () => {
     setEditingSnippet(null);
     setIsDialogOpen(true);
   };
 
-  const handleEditSnippet = (snippet: Snippet) => {
+  const handleEditSnippetClick = (snippet: Snippet) => {
     setEditingSnippet(snippet);
     setIsDialogOpen(true);
   };
 
-  const handleDeleteSnippet = (id: string) => {
-    setSnippets(snippets.filter((s) => s.id !== id));
+  const handleDeleteSnippet = async (id: string) => {
+    await deleteSnippet(id);
   };
 
-  const handleFormSubmit = (snippet: Snippet) => {
+  const handleFormSubmit = async (snippet: Snippet) => {
     if (editingSnippet) {
-      setSnippets(
-        snippets.map((s) => (s.id === snippet.id ? snippet : s))
-      );
+      await updateSnippet(snippet);
     } else {
-      setSnippets([...snippets, snippet]);
+      await addSnippet(snippet);
     }
     setIsDialogOpen(false);
     setEditingSnippet(null);
   };
 
   const filteredSnippets = useMemo(() => {
+    if (status !== 'ready') return [];
     return snippets.filter(
       (snippet) =>
         snippet.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -58,9 +58,9 @@ export function SnippetList() {
           tag.toLowerCase().includes(searchTerm.toLowerCase())
         )
     );
-  }, [snippets, searchTerm]);
+  }, [snippets, searchTerm, status]);
 
-  if (!isInitialized) {
+  if (status === 'loading') {
     return (
       <div className="space-y-8">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
@@ -78,6 +78,14 @@ export function SnippetList() {
         </div>
       </div>
     );
+  }
+
+  if (status === 'permission-required') {
+    return <PermissionRequiredView grantPermission={grantPermission} />;
+  }
+
+  if (status === 'error') {
+    return <ErrorView error={error} />;
   }
 
   return (
@@ -98,7 +106,7 @@ export function SnippetList() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-            <Button onClick={handleAddSnippet} className="shrink-0 bg-accent text-accent-foreground hover:bg-accent/90">
+            <Button onClick={handleAddSnippetClick} className="shrink-0 bg-accent text-accent-foreground hover:bg-accent/90">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Add Snippet
             </Button>
@@ -111,7 +119,7 @@ export function SnippetList() {
             <SnippetCard
               key={snippet.id}
               snippet={snippet}
-              onEdit={handleEditSnippet}
+              onEdit={handleEditSnippetClick}
               onDelete={handleDeleteSnippet}
             />
           ))}
@@ -128,7 +136,7 @@ export function SnippetList() {
                 {searchTerm ? `Your search for "${searchTerm}" did not return any results.` : "Get started by adding your first snippet."}
             </p>
              <div className="mt-6">
-                <Button onClick={handleAddSnippet} className="bg-accent text-accent-foreground hover:bg-accent/90">
+                <Button onClick={handleAddSnippetClick} className="bg-accent text-accent-foreground hover:bg-accent/90">
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Add Snippet
                 </Button>

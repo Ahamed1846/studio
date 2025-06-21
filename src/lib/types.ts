@@ -16,3 +16,8 @@ export interface GitHelpItem {
   question: string;
   answer: string;
 }
+
+export interface DevDockData {
+  projects: Project[];
+  snippets: Snippet[];
+}

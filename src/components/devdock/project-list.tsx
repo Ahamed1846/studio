@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useDevDock } from "@/contexts/DevDockDataContext";
 import type { Project } from "@/lib/types";
 import { ProjectCard } from "./project-card";
 import { Button } from "@/components/ui/button";
@@ -14,41 +14,39 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { ProjectForm } from "./project-form";
-import { initialProjects } from "@/lib/constants";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PermissionRequiredView, ErrorView } from "./shared-views";
 
 export function ProjectList() {
-  const [projects, setProjects, isInitialized] = useLocalStorage<Project[]>("devdock-projects-final", initialProjects);
+  const { projects, status, error, grantPermission, addProject, updateProject, deleteProject } = useDevDock();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
 
-  const handleAddProject = () => {
+  const handleAddProjectClick = () => {
     setEditingProject(null);
     setIsDialogOpen(true);
   };
 
-  const handleEditProject = (project: Project) => {
+  const handleEditProjectClick = (project: Project) => {
     setEditingProject(project);
     setIsDialogOpen(true);
   };
 
-  const handleDeleteProject = (id: string) => {
-    setProjects(projects.filter((p) => p.id !== id));
+  const handleDeleteProject = async (id: string) => {
+    await deleteProject(id);
   };
 
-  const handleFormSubmit = (data: Omit<Project, "id">) => {
+  const handleFormSubmit = async (data: Omit<Project, "id">) => {
     if (editingProject) {
-      setProjects(
-        projects.map((p) => (p.id === editingProject.id ? { ...p, ...data } : p))
-      );
+      await updateProject({ ...editingProject, ...data });
     } else {
-      setProjects([...projects, { id: crypto.randomUUID(), ...data }]);
+      await addProject(data);
     }
     setIsDialogOpen(false);
     setEditingProject(null);
   };
 
-  if (!isInitialized) {
+  if (status === 'loading') {
     return (
       <div className="space-y-8">
          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -65,6 +63,14 @@ export function ProjectList() {
     );
   }
 
+  if (status === 'permission-required') {
+    return <PermissionRequiredView grantPermission={grantPermission} />;
+  }
+
+  if (status === 'error') {
+    return <ErrorView error={error} />;
+  }
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -72,7 +78,7 @@ export function ProjectList() {
           <h2 className="text-3xl font-bold font-headline">Projects</h2>
           <p className="mt-1 text-muted-foreground">Manage your local development projects.</p>
         </div>
-        <Button onClick={handleAddProject} className="shrink-0 bg-accent text-accent-foreground hover:bg-accent/90">
+        <Button onClick={handleAddProjectClick} className="shrink-0 bg-accent text-accent-foreground hover:bg-accent/90">
           <PlusCircle className="mr-2 h-4 w-4" />
           Add Project
         </Button>
@@ -84,7 +90,7 @@ export function ProjectList() {
             <ProjectCard
               key={project.id}
               project={project}
-              onEdit={handleEditProject}
+              onEdit={handleEditProjectClick}
               onDelete={handleDeleteProject}
             />
           ))}
@@ -97,7 +103,7 @@ export function ProjectList() {
             <h3 className="mt-4 text-xl font-semibold">No Projects Found</h3>
             <p className="mt-2 text-base text-muted-foreground">Get started by adding your first project.</p>
             <div className="mt-6">
-                <Button onClick={handleAddProject} className="bg-accent text-accent-foreground hover:bg-accent/90">
+                <Button onClick={handleAddProjectClick} className="bg-accent text-accent-foreground hover:bg-accent/90">
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Add Project
                 </Button>
