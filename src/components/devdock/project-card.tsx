@@ -2,7 +2,7 @@
 
 import type { Project } from "@/lib/types";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { CodeXml, Copy, Github, Pencil, Trash2, Folder } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -32,6 +32,22 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
       title: "Path Copied!",
       description: `Project path ${project.path} copied to clipboard.`,
     });
+  };
+
+  const handleOpenVSCode = () => {
+    const newTab = window.open("", "_blank");
+    if (newTab) {
+      newTab.location.href = `vscode://file/${project.path}`;
+      setTimeout(() => {
+        newTab.close();
+      }, 500);
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Popup Blocked",
+        description: "Please allow pop-ups for this site to open projects in VS Code.",
+      });
+    }
   };
 
   return (
@@ -75,11 +91,9 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
         </CardDescription>
       </CardHeader>
       <CardFooter className="flex-wrap gap-2 justify-start border-t pt-4 mt-auto">
-        <Button variant="outline" size="sm" asChild>
-          <a href={`vscode://file/${project.path}`} target="_blank" rel="noopener noreferrer">
-            <CodeXml />
-            VS Code
-          </a>
+        <Button variant="outline" size="sm" onClick={handleOpenVSCode}>
+          <CodeXml />
+          VS Code
         </Button>
         <Button variant="outline" size="sm" onClick={handleCopyPath}>
           <Copy />
