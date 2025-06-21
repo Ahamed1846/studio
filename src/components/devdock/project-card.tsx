@@ -35,11 +35,11 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
   };
 
   return (
-    <Card className="hover:shadow-md transition-shadow duration-300">
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span>{project.name}</span>
-          <div className="flex items-center space-x-2">
+    <Card className="flex flex-col h-full hover:shadow-lg transition-shadow duration-300">
+      <CardHeader className="flex-grow pb-4">
+        <CardTitle className="flex items-start justify-between">
+          <span className="font-bold">{project.name}</span>
+          <div className="flex items-center space-x-1">
             <Button variant="ghost" size="icon" onClick={() => onEdit(project)}>
               <Pencil className="h-4 w-4" />
               <span className="sr-only">Edit Project</span>
@@ -69,26 +69,26 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
             </AlertDialog>
           </div>
         </CardTitle>
-        <CardDescription className="flex items-center pt-2">
-          <Folder className="h-4 w-4 mr-2" />
-          {project.path}
+        <CardDescription className="flex items-center pt-2 text-sm text-muted-foreground">
+          <Folder className="h-4 w-4 mr-2 shrink-0" />
+          <span className="truncate">{project.path}</span>
         </CardDescription>
       </CardHeader>
-      <CardFooter className="flex justify-end space-x-2">
+      <CardFooter className="flex-wrap gap-2 justify-start border-t pt-4 mt-auto">
         <Button variant="outline" size="sm" asChild>
           <a href={`vscode://file/${project.path}`} target="_blank" rel="noopener noreferrer">
-            <CodeXml className="mr-2 h-4 w-4" />
+            <CodeXml />
             VS Code
           </a>
         </Button>
         <Button variant="outline" size="sm" onClick={handleCopyPath}>
-          <Copy className="mr-2 h-4 w-4" />
+          <Copy />
           Copy Path
         </Button>
         {project.githubUrl && (
           <Button variant="outline" size="sm" asChild>
             <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
-              <Github className="mr-2 h-4 w-4" />
+              <Github />
               GitHub
             </a>
           </Button>

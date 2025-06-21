@@ -98,7 +98,7 @@ export function SnippetList() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-            <Button onClick={handleAddSnippet} style={{ backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))' }} className="shrink-0">
+            <Button onClick={handleAddSnippet} className="shrink-0 bg-accent text-accent-foreground hover:bg-accent/90">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Add Snippet
             </Button>
@@ -124,7 +124,7 @@ export function SnippetList() {
                 {searchTerm ? `No results for "${searchTerm}".` : "Get started by adding your first snippet."}
             </p>
              <div className="mt-6">
-                <Button onClick={handleAddSnippet} style={{ backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))' }}>
+                <Button onClick={handleAddSnippet} className="bg-accent text-accent-foreground hover:bg-accent/90">
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Add Snippet
                 </Button>

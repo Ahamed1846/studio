@@ -105,7 +105,7 @@ export function SnippetForm({ snippet, onSubmit, onClose }: SnippetFormProps) {
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" style={{ backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))' }}>
+          <Button type="submit" className="bg-accent text-accent-foreground hover:bg-accent/90">
             {snippet ? "Save Changes" : "Add Snippet"}
           </Button>
         </div>

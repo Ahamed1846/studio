@@ -40,11 +40,11 @@ export function SnippetCard({ snippet, onEdit, onDelete }: SnippetCardProps) {
   };
 
   return (
-    <Card className="flex flex-col h-full hover:shadow-md transition-shadow duration-300">
-      <CardHeader>
+    <Card className="flex flex-col h-full hover:shadow-lg transition-shadow duration-300">
+      <CardHeader className="pb-4">
         <CardTitle className="flex items-start justify-between">
-          <span className="font-headline">{snippet.title}</span>
-          <div className="flex items-center space-x-2">
+          <span className="font-bold">{snippet.title}</span>
+          <div className="flex items-center space-x-1">
             <Button variant="ghost" size="icon" onClick={() => onEdit(snippet)}>
               <Pencil className="h-4 w-4" />
               <span className="sr-only">Edit Snippet</span>
@@ -73,21 +73,23 @@ export function SnippetCard({ snippet, onEdit, onDelete }: SnippetCardProps) {
             </AlertDialog>
           </div>
         </CardTitle>
-        <div className="flex flex-wrap gap-1 pt-2">
-          {snippet.tags.map((tag, index) => (
-            <Badge key={index} variant="secondary">
-              {tag}
-            </Badge>
-          ))}
-        </div>
+        {snippet.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 pt-2">
+            {snippet.tags.map((tag, index) => (
+              <Badge key={index} variant="secondary">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        )}
       </CardHeader>
       <CardContent className="flex-grow">
-        <pre className="bg-muted p-4 rounded-md overflow-x-auto text-sm">
+        <pre className="bg-muted p-4 rounded-md overflow-x-auto text-sm h-full">
           <code className="font-code">{snippet.content}</code>
         </pre>
       </CardContent>
-      <CardFooter>
-        <Button onClick={handleCopy} size="sm" className="w-full" style={{ backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))' }}>
+      <CardFooter className="border-t pt-4">
+        <Button onClick={handleCopy} size="sm" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
           <Copy className="mr-2 h-4 w-4" />
           {isCopied ? "Copied!" : "Copy Snippet"}
         </Button>

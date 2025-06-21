@@ -59,7 +59,7 @@ export function ProjectList() {
             <Skeleton className="h-10 w-36" />
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-40 rounded-lg" />)}
+            {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-48 rounded-lg" />)}
         </div>
       </div>
     );
@@ -72,7 +72,7 @@ export function ProjectList() {
           <h2 className="text-3xl font-bold font-headline">Projects</h2>
           <p className="mt-1 text-sm text-muted-foreground">Manage your local development projects.</p>
         </div>
-        <Button onClick={handleAddProject} style={{ backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))' }} className="shrink-0">
+        <Button onClick={handleAddProject} className="shrink-0 bg-accent text-accent-foreground hover:bg-accent/90">
           <PlusCircle className="mr-2 h-4 w-4" />
           Add Project
         </Button>
@@ -95,7 +95,7 @@ export function ProjectList() {
             <h3 className="mt-4 text-lg font-medium">No Projects Found</h3>
             <p className="mt-1 text-sm text-muted-foreground">Get started by adding your first project.</p>
             <div className="mt-6">
-                <Button onClick={handleAddProject} style={{ backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))' }}>
+                <Button onClick={handleAddProject} className="bg-accent text-accent-foreground hover:bg-accent/90">
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Add Project
                 </Button>

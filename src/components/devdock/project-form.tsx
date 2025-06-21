@@ -90,7 +90,7 @@ export function ProjectForm({ project, onSubmit, onClose }: ProjectFormProps) {
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" style={{ backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))' }}>
+          <Button type="submit" className="bg-accent text-accent-foreground hover:bg-accent/90">
             {project ? "Save Changes" : "Add Project"}
           </Button>
         </div>
