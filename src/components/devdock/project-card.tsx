@@ -23,7 +23,7 @@ import { useMemo } from "react";
 import { ScrollArea } from "../ui/scroll-area";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { GitHubInsights } from "./github-insights";
-import { cn } from "@/lib/utils";
+import { cn, getTagColorClassName } from "@/lib/utils";
 
 
 type ProjectCardProps = {
@@ -144,7 +144,7 @@ export function ProjectCard({ project, onEdit, onDelete, onPin, onViewDetails, a
         {project.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {project.tags.map((tag, index) => (
-              <Badge key={index} variant="secondary" className="font-normal">
+              <Badge key={index} variant="outline" className={cn("font-normal", getTagColorClassName(tag))}>
                 {tag}
               </Badge>
             ))}

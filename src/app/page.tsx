@@ -16,6 +16,7 @@ import { ActivityLogItem } from "@/lib/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDistanceToNow } from "date-fns";
 import { Clock } from "lucide-react";
+import { Footer } from "@/components/devdock/footer";
 
 
 function ActivityLogDialog() {
@@ -151,6 +152,7 @@ export default function Home() {
         </Tabs>
       </main>
       <ActivityLogDialog />
+      <Footer />
     </div>
   );
 }

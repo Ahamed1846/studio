@@ -9,7 +9,7 @@ import { useUIState } from "@/contexts/UIStateContext";
 import type { Project } from "@/lib/types";
 import { ProjectCard } from "./project-card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, FileWarning, Search, LayoutGrid, Tag, FileText, Calendar, Terminal } from "lucide-react";
+import { PlusCircle, Search, LayoutGrid, Tag, FileText, Calendar, Terminal } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ProjectForm } from "./project-form";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -20,6 +20,9 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { format } from "date-fns";
 import { Badge } from "../ui/badge";
+import { getTagColorClassName } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 function ProjectDetailsDialog() {
     const { editingProject, openDialog, closeDialog } = useUIState();
@@ -54,7 +57,7 @@ function ProjectDetailsDialog() {
                              <StatItem icon={Tag} label="Tags" value={
                                 editingProject.tags.length > 0 ? (
                                     <div className="flex flex-wrap gap-1">
-                                        {editingProject.tags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
+                                        {editingProject.tags.map(tag => <Badge key={tag} variant="outline" className={cn("font-normal", getTagColorClassName(tag))}>{tag}</Badge>)}
                                     </div>
                                 ) : "None"
                             } />
@@ -144,17 +147,27 @@ export function ProjectList() {
 
   const renderProjectList = (list: Project[]) => (
     <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <AnimatePresence>
         {list.map((project) => (
-        <ProjectCard
+          <motion.div
             key={project.id}
-            project={project}
-            allSnippets={snippets}
-            onEdit={() => openProjectForm(project)}
-            onDelete={deleteProject}
-            onPin={toggleProjectPin}
-            onViewDetails={openProjectDetails}
-        />
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <ProjectCard
+                project={project}
+                allSnippets={snippets}
+                onEdit={() => openProjectForm(project)}
+                onDelete={deleteProject}
+                onPin={toggleProjectPin}
+                onViewDetails={openProjectDetails}
+            />
+          </motion.div>
         ))}
+      </AnimatePresence>
     </div>
   );
 

@@ -18,7 +18,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { cn, getTagColorClassName } from "@/lib/utils";
 
 type SnippetCardProps = {
   snippet: Snippet;
@@ -85,7 +85,7 @@ export function SnippetCard({ snippet, onEdit, onDelete, onPin }: SnippetCardPro
         {snippet.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5 pt-2">
             {snippet.tags.map((tag, index) => (
-              <Badge key={index} variant="secondary" className="font-normal">
+              <Badge key={index} variant="outline" className={cn("font-normal", getTagColorClassName(tag))}>
                 {tag}
               </Badge>
             ))}
