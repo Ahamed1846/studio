@@ -144,7 +144,7 @@ export function GitHelp() {
   const hasResults = favoriteItems.length > 0 || Object.keys(categorizedItems).length > 0;
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto">
+    <div className="space-y-8">
       <div className="text-center">
         <h2 className="text-3xl font-bold tracking-tight">Git Command Quick Reference</h2>
         <p className="mt-2 text-lg text-muted-foreground">
@@ -192,7 +192,7 @@ export function GitHelp() {
        </AnimatePresence>
 
       {hasResults ? (
-        <Accordion type="multiple" className="w-full space-y-3" defaultValue={Object.keys(categorizedItems)}>
+        <Accordion type="multiple" className="w-full space-y-3">
           {Object.entries(categorizedItems).map(([category, items]) => (
             <AccordionItem value={category} key={category} className="border-b-0">
                 <AccordionTrigger className="text-xl font-bold hover:no-underline border-b pb-3 mb-3">
