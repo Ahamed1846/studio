@@ -104,7 +104,7 @@ export function SnippetForm({ snippet, onSubmit, onClose }: SnippetFormProps) {
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90">
+          <Button type="submit">
             {snippet ? "Save Changes" : "Add Snippet"}
           </Button>
         </div>

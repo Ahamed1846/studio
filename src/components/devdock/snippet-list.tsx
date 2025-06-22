@@ -132,7 +132,7 @@ export function SnippetList() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <Button onClick={() => openSnippetForm()} className="shrink-0 bg-primary text-primary-foreground hover:bg-primary/90">
+          <Button onClick={() => openSnippetForm()} className="shrink-0">
             <PlusCircle className="mr-2 h-4 w-4" />
             Add Snippet
           </Button>
@@ -147,7 +147,7 @@ export function SnippetList() {
             <h3 className="mt-4 text-2xl font-semibold">No Snippets Yet</h3>
             <p className="mt-2 text-base text-muted-foreground max-w-md mx-auto">Get started by adding your first code snippet. It's great for saving common commands.</p>
              <div className="mt-6">
-                <Button onClick={() => openSnippetForm()} className="bg-primary text-primary-foreground hover:bg-primary/90">
+                <Button onClick={() => openSnippetForm()}>
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Add Your First Snippet
                 </Button>

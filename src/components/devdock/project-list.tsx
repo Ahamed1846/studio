@@ -189,7 +189,7 @@ export function ProjectList() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <Button onClick={() => openProjectForm()} className="shrink-0 bg-primary text-primary-foreground hover:bg-primary/90">
+          <Button onClick={() => openProjectForm()} className="shrink-0">
             <PlusCircle className="mr-2 h-4 w-4" />
             Add Project
           </Button>
@@ -204,7 +204,7 @@ export function ProjectList() {
             <h3 className="mt-4 text-2xl font-semibold">No Projects Yet</h3>
             <p className="mt-2 text-base text-muted-foreground max-w-md mx-auto">Get started by adding your first project to have quick access to its path, scripts, and more.</p>
             <div className="mt-6">
-                <Button onClick={() => openProjectForm()} className="bg-primary text-primary-foreground hover:bg-primary/90">
+                <Button onClick={() => openProjectForm()}>
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Add Your First Project
                 </Button>

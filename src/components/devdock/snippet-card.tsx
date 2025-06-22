@@ -98,7 +98,7 @@ export function SnippetCard({ snippet, onEdit, onDelete, onPin }: SnippetCardPro
         </pre>
       </CardContent>
       <CardFooter className="border-t pt-4 px-6 pb-4">
-        <Button onClick={handleCopy} size="sm" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+        <Button onClick={handleCopy} size="sm" className="w-full">
           {isCopied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
           {isCopied ? "Copied!" : "Copy Snippet"}
         </Button>
