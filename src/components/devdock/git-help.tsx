@@ -217,7 +217,7 @@ export function GitHelp() {
           ))}
         </Accordion>
       ) : (
-        <div className="text-center py-16 px-4 border-2 border-dashed rounded-xl bg-card">
+        <div className="text-center py-16 px-4 border-2 border-dashed rounded-lg bg-card">
             <div className="flex justify-center items-center w-16 h-16 mx-auto bg-muted rounded-full mb-6 text-muted-foreground">
               <Search className="h-8 w-8" />
             </div>
