@@ -1,4 +1,5 @@
 
+
 export interface Script {
   id: string;
   name: string;
@@ -26,8 +27,10 @@ export interface Snippet {
 }
 
 export interface GitHelpItem {
-  question: string;
-  answer: string;
+  id: string;
+  command: string;
+  description: string;
+  useCase?: string;
 }
 
 export interface ActivityLogItem {
