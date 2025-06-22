@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { type GitHelpItem } from "@/lib/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "../ui/badge";
+import Fuse from "fuse.js";
 
 const FAVORITES_KEY = 'devdock-git-favorites';
 
@@ -104,15 +105,11 @@ export function GitHelp() {
   const allCommands = useMemo(() => Object.values(gitHelpItemsByCategory).flat(), []);
 
   const filteredCommands = useMemo(() => {
-    if (!searchTerm) {
-      return allCommands;
-    }
-    return allCommands.filter(
-      (item) =>
-        item.command.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (item.useCase && item.useCase.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    const fuse = new Fuse(allCommands, {
+        keys: ['command', 'description', 'useCase'],
+        threshold: 0.3,
+    });
+    return searchTerm ? fuse.search(searchTerm).map(result => result.item) : allCommands;
   }, [searchTerm, allCommands]);
 
   const { favoriteItems, categorizedItems } = useMemo(() => {

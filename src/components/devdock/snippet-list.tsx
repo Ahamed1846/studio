@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from "react";
@@ -17,6 +18,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { motion, AnimatePresence } from "framer-motion";
 import { getTagColorClassName, cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
+import Fuse from "fuse.js";
 
 export function SnippetList() {
   const { snippets, status, error, addSnippet, updateSnippet, deleteSnippet, toggleSnippetPin } = useDevDock();
@@ -35,13 +37,13 @@ export function SnippetList() {
   const { pinnedSnippets, otherSnippets, groupedSnippets } = useMemo(() => {
     if (status !== 'ready') return { pinnedSnippets: [], otherSnippets: [], groupedSnippets: {} };
     
-    const filtered = snippets.filter(
-      (snippet) =>
-        snippet.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        snippet.tags.some((tag) =>
-          tag.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-    );
+    const fuse = new Fuse(snippets, {
+        keys: ['title', 'tags', 'content'],
+        threshold: 0.3,
+        includeScore: true,
+    });
+    
+    const filtered = searchTerm ? fuse.search(searchTerm).map(result => result.item) : snippets;
 
     const pinned = filtered.filter(s => s.isPinned).sort((a, b) => a.title.localeCompare(b.title));
     const others = filtered.filter(s => !s.isPinned);
@@ -52,8 +54,9 @@ export function SnippetList() {
         acc['Uncategorized'].push(snippet);
       } else {
         snippet.tags.forEach(tag => {
-          if (!acc[tag]) acc[tag] = [];
-          acc[tag].push(snippet);
+          const capitalizedTag = tag.charAt(0).toUpperCase() + tag.slice(1);
+          if (!acc[capitalizedTag]) acc[capitalizedTag] = [];
+          acc[capitalizedTag].push(snippet);
         });
       }
       return acc;
@@ -123,7 +126,7 @@ export function SnippetList() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Search by title or tag..."
+              placeholder="Search by title, tag, or content..."
               className="w-full pl-10"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -150,7 +153,7 @@ export function SnippetList() {
                 </Button>
             </div>
         </div>
-      ) : pinnedSnippets.length === 0 && otherSnippets.length === 0 ? (
+      ) : pinnedSnippets.length === 0 && otherSnippets.length === 0 && Object.keys(groupedSnippets).length === 0 ? (
         <div className="text-center py-16 px-4 border-2 border-dashed rounded-xl bg-card">
            <div className="flex justify-center items-center w-16 h-16 mx-auto bg-muted rounded-full mb-6 text-muted-foreground">
               <Search className="h-8 w-8" />
@@ -174,11 +177,13 @@ export function SnippetList() {
 
           {otherSnippets.length > 0 && (
             <section className="space-y-4">
-              <div className="flex items-center gap-3">
-                <Tags className="h-6 w-6 text-primary" />
-                <h3 className="text-2xl font-bold tracking-tight">Grouped by Tag</h3>
-              </div>
-              <Accordion type="multiple" className="w-full space-y-2">
+              {Object.keys(groupedSnippets).length > 0 && (
+                 <div className="flex items-center gap-3">
+                    <Tags className="h-6 w-6 text-primary" />
+                    <h3 className="text-2xl font-bold tracking-tight">Grouped by Tag</h3>
+                 </div>
+              )}
+              <Accordion type="multiple" className="w-full space-y-2" defaultValue={Object.keys(groupedSnippets)}>
                 {Object.entries(groupedSnippets).sort(([a], [b]) => a.localeCompare(b)).map(([tag, snippetsInGroup]) => (
                   <AccordionItem value={tag} key={tag} className="border rounded-lg bg-card overflow-hidden transition-all">
                     <AccordionTrigger className="px-4 py-3 hover:no-underline text-base hover:bg-muted/50 rounded-t-lg">

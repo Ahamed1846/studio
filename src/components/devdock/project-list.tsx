@@ -23,6 +23,7 @@ import { Badge } from "../ui/badge";
 import { getTagColorClassName } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import Fuse from "fuse.js";
 
 function ProjectDetailsDialog() {
     const { editingProject, openDialog, closeDialog } = useUIState();
@@ -106,14 +107,13 @@ export function ProjectList() {
   const { pinnedProjects, otherProjects } = useMemo(() => {
     if (status !== 'ready') return { pinnedProjects: [], otherProjects: [] };
     
-    const filtered = projects.filter(
-      (project) =>
-        project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        project.path.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        project.tags.some((tag) =>
-          tag.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-    );
+    const fuse = new Fuse(projects, {
+        keys: ['name', 'path', 'tags', 'notes'],
+        threshold: 0.3,
+        includeScore: true,
+    });
+
+    const filtered = searchTerm ? fuse.search(searchTerm).map(result => result.item) : projects;
 
     const pinned = filtered.filter(p => p.isPinned).sort((a, b) => a.name.localeCompare(b.name));
     const others = filtered.filter(p => !p.isPinned).sort((a, b) => a.name.localeCompare(b.name));

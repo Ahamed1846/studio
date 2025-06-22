@@ -40,6 +40,7 @@
     "file-saver": "^2.0.5",
     "firebase": "^11.9.1",
     "framer-motion": "^11.2.12",
+    "fuse.js": "^7.0.0",
     "lucide-react": "^0.475.0",
     "next": "^14.2.4",
     "patch-package": "^8.0.0",
